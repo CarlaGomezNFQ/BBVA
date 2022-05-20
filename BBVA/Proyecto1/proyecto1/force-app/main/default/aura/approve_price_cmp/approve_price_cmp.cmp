@@ -1,0 +1,7 @@
+<aura:component implements="dwp_dbpn:DynamicFlowWizardStep_itf" extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="cuco.Approve_Price_Ctrl">
+
+  <!-- Modal attributes -->
+  <aura:attribute name="hasHeader" type="Boolean" default="false" />
+
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+</aura:component>

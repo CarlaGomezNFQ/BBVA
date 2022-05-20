@@ -1,0 +1,18 @@
+.THIS .noLabel > .slds-form-element__label {
+  display: none !important;
+}
+
+.THIS .slds-textarea {
+  min-height: 150px !important;
+}
+
+.THIS .round {
+  border-radius: 4px;
+}
+
+.THIS .tooltipStyle {
+  position: absolute;
+  top: -20px;
+  left: 20px;
+  min-width: 200px;
+}

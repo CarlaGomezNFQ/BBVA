@@ -1,0 +1,40 @@
+<!--
+@File Name          : Arc_Gen_ChatMessages_cmp.cmp
+@Description        : Component to show an error or a success message using lightning chats
+@Author             : eduardoefrain.hernandez.contractor@bbva.com
+@Group              : ARCE DWP
+@Last Modified By   : eduardoefrain.hernandez.contractor@bbva.com
+@Last Modified On   : 5/6/2020 20:22:15
+@Modification Log   :
+Ver       Date            Author      		    Modification
+1.0    5/6/2020   eduardoefrain.hernandez.contractor@bbva.com     Initial Version
+-->
+<aura:component implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:appHostable,flexipage:availableForRecordHome,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute name="title"           type="String" description="Descriptive and short title for the message"                             access="global"/>
+    <aura:attribute name="variant"         type="String" description="Type of message, it could be Success, Error, Warning"                    access="global"/>
+    <aura:attribute name="assistiveText"   type="String" description="Descriptive text to assist the user when the cursor is on the message"   access="global"/>
+    <aura:attribute name="message"         type="String" description="Message text that you would to show in a component"                      access="global"/>
+    <aura:attribute name="secondMessage"   type="String" description="Message text that you would to show in a component"                      access="global"/>
+    <aura:attribute name="chatEvent"       type="String" description="SLDS Class of the DIV alert "                                            access="global"/>
+    <aura:attribute name="iconName"        type="String" description="Name of the icon that will be shown"                                     access="global"/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <section role="log" class="slds-chat">
+        <ul class="slds-chat-list">
+            <li class="slds-chat-listitem slds-chat-listitem_event">
+                <div class="{!v.chatEvent}" role="alert">
+                    <div class="slds-chat-event__rule"></div>
+                    <div class="slds-chat-event__body">
+                        <span class="slds-icon_container slds-icon-utility-announcement slds-chat-icon" title="{!v.title}">
+                            <lightning:icon iconName="{!v.iconName}" alternativeText="clear!" variant="{!v.variant}"/>
+                            <span class="slds-assistive-text">{!v.assistiveText}</span>
+                        </span>
+                    </div>
+                    <div class="slds-chat-event__rule"></div>
+                    <div class="slds-chat-event__agent-message"><b>{!v.title}</b></div>
+                    <div class="slds-chat-event__agent-message">{!v.message}</div>
+                    <div class="slds-chat-event__agent-message slds-text-body_small">{!v.secondMessage}</div>
+                </div>
+            </li>
+        </ul>
+    </section>
+</aura:component>

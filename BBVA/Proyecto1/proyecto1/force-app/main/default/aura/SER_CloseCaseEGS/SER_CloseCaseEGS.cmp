@@ -1,0 +1,101 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+  access="global"  extends="c:SER_Connection" controller="SER_CloseCaseEGS_CONTROLLER">
+  <aura:attribute name="caseCloneId" type="Id"/>
+  <aura:attribute name="recordId" type="String"/>
+  <aura:attribute name="bl_DisplayModal" type="Boolean"/>
+  <aura:attribute name="bl_close" type="Boolean" default="false"/>
+  <aura:attribute name="bl_reopen" type="Boolean" default="false"/>
+  <aura:attribute name="bl_discardcc" type="Boolean" default="false"/>
+  <aura:attribute name="bl_clone" type="Boolean" default="false"/>
+  <aura:attribute name="bl_resolve" type="Boolean" default="false"/>
+  <aura:attribute name="bl_discard" type="Boolean" default="false"/>
+  <aura:attribute name="discard" type="Boolean" default="false"/>
+  <aura:attribute name="bl_inProgress" type="Boolean" default="false"/>
+  <aura:attribute name="bl_continueButton" type="Boolean" default="false"/>
+  <aura:attribute name="bl_confirmDiscard" type="Boolean" default="false"/>
+  <aura:attribute name="message" type="String"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+  <div class="slds-page-header slds-grid forceActionsContainer slds-box_x-small slds-align_absolute-center ">
+    <lightning:spinner class="slds-hide" aura:id="Spinner" alternativeText="Loading" size="medium" variant="brand"/>
+    <div class="slds-size_0-of-1">
+      <div class=" slds-box_x-small ">
+        <aura:if isTrue="{!v.bl_close}">
+          <lightning:button class=" slds-button slds-button--neutral not-selected slds-not-selected uiButton"
+          label="{!$Label.c.SER_EGS_Close_Case}" name="Close Case" onclick="{!c.fn_closeCase}" variant="brand" />
+        </aura:if>
+        <aura:if isTrue="{!v.bl_reopen}">
+          <lightning:button class=" slds-button slds-button--neutral not-selected slds-not-selected uiButton"
+          label="{!$Label.c.SER_EGS_Reopen_Case}" name="Reopen Case" onclick="{!c.fn_reopenCase}" variant="brand" />
+        </aura:if>
+        <aura:if isTrue="{!v.bl_clone}">
+          <lightning:button class=" slds-button slds-button--neutral not-selected slds-not-selected uiButton"
+          label="{!$Label.c.SER_EGS_Clone_Case}" name="Clone Case" onclick="{!c.fn_cloneCase}" variant="brand" />
+        </aura:if>
+        <aura:if isTrue="{!v.bl_discardcc}">
+          <lightning:button class=" slds-button slds-button--neutral not-selected slds-not-selected uiButton"
+          label="{!$Label.c.SER_EGS_Discard_Comment}" name="Discard comment" onclick="{!c.fn_discardcc}" variant="brand" />
+        </aura:if>
+        <aura:if isTrue="{!v.bl_resolve}">
+          <lightning:button class=" slds-button slds-button--neutral not-selected slds-not-selected uiButton"
+          label="{!$Label.c.SER_EGS_Resolve_Case}" name="Resolve Case" onclick="{!c.fn_resolveCase}" variant="brand" />
+        </aura:if>
+        <aura:if isTrue="{!v.bl_discard}">
+          <lightning:button class=" slds-button slds-button--neutral not-selected slds-not-selected uiButton"
+          label="{!$Label.c.SER_EGS_Discard_Case}" name="Discard Case1" onclick="{!c.fn_openModal}" variant="brand" />
+        </aura:if>
+      </div>
+    </div>
+  </div>
+
+  <aura:if isTrue="{!v.bl_DisplayModal}">
+    <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container cls_modalcontainer_console_aligned" id="div_ModalContainer">
+        <div class="slds-modal__header">
+          <h1 id="header99" class="slds-text-heading--medium">{!$Label.c.SER_EGS_Close_Case}</h1>
+        </div>
+        <div class="slds-modal__content slds-p-around--medium slds-form_compound slds-modal_large bodyHeight">
+          <div class="slds-section slds-is-open">
+            <div aria-hidden="false" class="slds-section__content slds-align_absolute-center">
+              <b>{!v.message}</b>
+            </div>
+          </div>
+        </div>
+
+        <div class="slds-modal__footer">
+          <button class="slds-button slds-button--neutral" onclick="{!c.fn_CloseModal}">{!$Label.c.SER_EGS_Cancel_lbl}</button>
+          <button class="slds-button slds-button--brand" onclick="{!c.fn_Continue}" disabled="{!v.bl_continueButton}">{!$Label.c.SER_EGS_Continue}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="slds-backdrop slds-backdrop--open">
+    </div>
+  </aura:if>
+
+  <aura:if isTrue="{!v.bl_confirmDiscard}">
+    <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container cls_modalcontainer_console_aligned" id="div_ModalContainer">
+        <div class="slds-modal__header">
+          <h1 id="header99" class="slds-text-heading--medium">{!$Label.c.SER_EGS_Discard_Case}</h1>
+        </div>
+        <div class="slds-modal__content slds-p-around--medium slds-form_compound slds-modal_large bodyHeight">
+          <div class="slds-section slds-is-open">
+            <div aria-hidden="false" class="slds-section__content slds-align_absolute-center">
+              <b>{!$Label.c.SER_EGS_Discard_Case_Information}</b>
+            </div>
+          </div>
+        </div>
+
+        <div class="slds-modal__footer">
+          <button class="slds-button slds-button--neutral" onclick="{!c.fn_CloseModal}">{!$Label.c.SER_EGS_Cancel_lbl}</button>
+          <button class="slds-button slds-button--brand" onclick="{!c.fn_continueDiscard}" name="Discard Case">{!$Label.c.SER_EGS_Continue}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="slds-backdrop slds-backdrop--open">
+    </div>
+  </aura:if>
+
+</aura:component>

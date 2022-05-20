@@ -1,0 +1,208 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" description="Conditions" access="global" controller="cuco.Conditions_Ctrl">
+
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <aura:handler name="conditionsSelectContinueEvt" event="cuco:conditions_select_continue_evt" action="{!c.handleConditionsSelectContinue}"  includeFacets="true" phase="bubble" />
+  <aura:handler event="force:refreshView" action="{!c.doInit}" />
+  <aura:handler event="cuco:refresh_conditions_evt" action="{!c.refreshConditions}" />
+
+  <aura:attribute name="rawConditions" type="Object" />
+  <aura:attribute name="managePermissions" type="Object" />
+  <aura:attribute name="conditions" type="Object" />
+  <aura:attribute name="sObjectName" type="String" />
+  <aura:attribute name="activeSections" type="List" default="[]" />
+  <aura:attribute name="noconditions" type="Boolean" default="false" />
+  <aura:attribute name="waiting" type="Boolean" default="false"/>
+
+  <div class="slds-card">
+  <aura:if isTrue="{!v.waiting}">
+    <lightning:spinner variant="brand" />
+  </aura:if>
+
+    <!-- Buttons -->
+    <aura:if isTrue="{!and(v.sObjectName != 'cuco__profitability_sheet__c', v.managePermissions.add == true)}">
+        <lightning:layout>
+            <lightning:layoutItem alignmentBump="left">
+                <lightning:button onclick="{!c.addConditions}" disabled="{!v.waiting}" label="{!$Label.cuco.add_conditions}" iconName="utility:add" iconPosition="left" class="slds-m-left_x-small" />
+            </lightning:layoutItem>
+        </lightning:layout>
+    </aura:if>
+
+    <!-- No results -->
+    <aura:if isTrue="{!v.noconditions}">
+        <div class="slds-card slds-m-top_x-small gray_panel slds-align_absolute-center" style="height:10rem;">
+            {!$Label.cuco.no_conditions}
+        </div>
+
+    <!--Display results -->
+    <aura:set attribute="else">
+
+        <!-- products -->
+        <lightning:accordion
+            class="slds-m-top_x-small conditions_accordion"
+            allowMultipleSectionsOpen="true"
+            activeSectionName="{! v.activeSections }"
+        >
+        <aura:iteration items="{!v.conditions}" var="product" indexVar="key">
+            <lightning:accordionSection class="slds-m-top_xx-small" name="{!product.section}" label="{!product.name}">
+                <lightning:accordion
+                    class="slds-m-top_x-small conditions_accordion"
+                    allowMultipleSectionsOpen="true"
+                    activeSectionName="{!product.opensection}"
+                >
+                    <!-- families -->
+                    <aura:iteration items="{!product.value}" var="family" indexVar="key2">
+
+                        <lightning:accordionSection class="slds-m-top_xsmall gray_panel" name="{!family.section}" label="{!family.name}">
+                                <aura:set attribute="actions">
+                                    <aura:if isTrue="{!and(v.sObjectName != 'cuco__profitability_sheet__c', v.managePermissions.edit == true)}">
+                                        <button onclick="{!c.editConditions}" disabled="{!v.waiting}" id="{!family.familyId}" class="slds-button slds-button_neutral slds-m-left_x-small slds-button__icon--left" style="margin-right:0;">
+                                            <lightning:icon iconName="utility:edit" size="xx-small" class="slds-current-color slds-m-right_x-small" />{!$Label.cuco.edit}
+                                        </button>
+                                    </aura:if>
+                                </aura:set>
+                            <aura:set attribute="body">
+                                <div class="slds-card gray_panel">
+
+                                    <!-- family level conditions -->
+                                    <aura:if isTrue="{!family.familyLevel}">
+                                        <lightning:layout>
+                                            <aura:iteration items="{!family.value}" var="condition" indexVar="key3">
+                                                <aura:if isTrue="{!condition.familyLevel}">
+                                                <aura:iteration items="{!condition.attributes}" var="attribute" indexVar="key35">
+                                                    <lightning:layoutItem>
+                                                        <div class="slds-card slds-card_boundary slds-m-bottom_x-small slds-m-right_small" style="min-width:150px;">
+                                                            <div class="slds-p-around_x-small" style="{!v.sObjectName != 'cuco__profitability_sheet__c' ? 'padding-right:40px;' : ''}" >
+                                                                {!attribute.name}<br />
+                                                                <aura:if isTrue="{!attribute.type == 'Currency'}">
+                                                                    <lightning:formattedNumber value="{!attribute.value}" style="currency" currencyCode="EUR" />
+                                                                </aura:if>
+
+                                                                <aura:if isTrue="{!attribute.type == 'Number'}">
+                                                                    <lightning:formattedNumber value="{!attribute.value}" maximumFractionDigits="0" />
+                                                                </aura:if>
+
+                                                                <aura:if isTrue="{!attribute.type == 'Percent'}">
+                                                                    <lightning:formattedNumber value="{!attribute.value}"  style="percent-fixed" minimumFractionDigits="2" maximumFractionDigits="2" />
+                                                                </aura:if>
+
+                                                                <aura:if isTrue="{!attribute.type == 'Permillage'}">
+                                                                    <lightning:formattedNumber value="{!attribute.value}"  minimumFractionDigits="2"  maximumFractionDigits="2" />&nbsp;&#8240;
+                                                                </aura:if>
+
+                                                                <aura:if isTrue="{!attribute.type == 'List'}">
+                                                                    <div title="{!attribute.value}">{!attribute.value}</div>
+                                                                </aura:if>
+
+                                                                <aura:if isTrue="{!attribute.type == 'Checkbox'}">
+                                                                    <aura:if isTrue="{!attribute.value}">
+                                                                            <div title="{!$Label.cuco.Yes}">{!$Label.cuco.Yes}</div>
+                                                                        <aura:set attribute="else">
+                                                                            <div title="{!$Label.cuco.No}">{!$Label.cuco.No}</div>
+                                                                        </aura:set>
+                                                                    </aura:if>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!and(v.sObjectName != 'cuco__profitability_sheet__c', v.managePermissions.remove == true)}">
+                                                                    <div onclick="{!c.removeCondition}" data-id="{!condition.id}" class="icon-blue slds-m-left_big" style="position:absolute;top:6px;right:7px" title="{!$Label.cuco.remove}">
+                                                                        <lightning:icon iconName="utility:delete" size="xx-small" class="slds-current-color" style="cursor:pointer" />
+                                                                    </div>
+                                                                </aura:if>
+                                                            </div>
+                                                        </div>
+                                                    </lightning:layoutItem>
+                                                </aura:iteration>
+                                                </aura:if>
+                                            </aura:iteration>
+                                        </lightning:layout>
+                                    </aura:if>
+
+                                    <aura:if isTrue="{!family.hasConditions}">
+                                        <!-- conditions -->
+                                        <table class="slds-table slds-table_cell-buffer slds-table_fixed-layout slds-no-row-hover slds-table_bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                <th class="" style="width:auto;" scope="col">
+                                                    <div style="text-overflow: ellipsis;" title="{!$Label.cuco.conditions}">{!$Label.cuco.conditions}</div>
+                                                </th>
+                                                <aura:iteration items="{!family.columns}" var="column" indexVar="key4">
+                                                    <th class="{!(column.type == 'Currency' || column.type == 'Permillage'|| column.type == 'Percent' || column.type == 'Number') ? 'slds-text-align_right' : 'slds-text-align_left'}" style="width:10%;min-width:10%;overflow:visible;" scope="col">
+                                                        <div title="{!column.name}">{!column.name}</div>
+                                                    </th>
+                                                </aura:iteration>
+                                                <aura:if isTrue="{!and(v.sObjectName != 'cuco__profitability_sheet__c', v.managePermissions.remove == true)}">
+                                                    <th class="slds-text-align_left" style="width:3rem;" scope="col">
+                                                        <div title="">&nbsp;&nbsp;&nbsp;</div>
+                                                    </th>
+                                                </aura:if>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <aura:iteration items="{!family.value}" var="condition" indexVar="key5">
+                                                    <aura:if isTrue="{!condition.familyLevel == false}">
+                                                        <tr class="slds-hint-parent">
+                                                            <th class="slds-truncate" data-label="Condition" scope="row">
+                                                                <div class="slds-truncate"  title="{!condition.name}">{!condition.name}</div>
+                                                            </th>
+                                                            <aura:iteration items="{!family.columns}" var="column" indexVar="key6">
+                                                                <td class="{!(column.type == 'Currency' || column.type == 'Permillage' || column.type == 'Percent' || column.type == 'Number') ? 'slds-text-align_right' : 'slds-text-align_left'}" data-label="{!column}">
+                                                                    <aura:iteration items="{!condition.attributes}" var="attribute" indexVar="key7">
+                                                                        <aura:if isTrue="{!attribute.id == column.id}">
+                                                                            <aura:if isTrue="{!attribute.value == '-'}">
+                                                                                <div title="">-</div>
+                                                                                <aura:set attribute="else">
+                                                                                    <!-- attribute value format -->
+                                                                                    <aura:if isTrue="{!attribute.type == 'Currency'}">
+                                                                                        <lightning:formattedNumber value="{!attribute.value}" style="currency" currencyCode="EUR" />
+                                                                                    </aura:if>
+                                                                                    <aura:if isTrue="{!attribute.type == 'Number'}">
+                                                                                        <lightning:formattedNumber value="{!attribute.value}" maximumFractionDigits="0" />
+                                                                                    </aura:if>
+                                                                                    <aura:if isTrue="{!attribute.type == 'Percent'}">
+                                                                                        <lightning:formattedNumber value="{!attribute.value}" style="percent-fixed" minimumFractionDigits="2" maximumFractionDigits="2" />
+                                                                                    </aura:if>
+                                                                                    <aura:if isTrue="{!attribute.type == 'Permillage'}">
+                                                                                        <lightning:formattedNumber value="{!attribute.value}" minimumFractionDigits="2" maximumFractionDigits="2" />&nbsp;&#8240;
+                                                                                    </aura:if>
+                                                                                    <aura:if isTrue="{!attribute.type == 'List'}">
+                                                                                        <div title="{!attribute.value}">{!attribute.value}</div>
+                                                                                    </aura:if>
+                                                                                    <aura:if isTrue="{!attribute.type == 'Checkbox'}">
+                                                                                        <aura:if isTrue="{!attribute.value}">
+                                                                                                <div title="{!$Label.cuco.Yes}">{!$Label.cuco.Yes}</div>
+                                                                                            <aura:set attribute="else">
+                                                                                                <div title="{!$Label.cuco.No}">{!$Label.cuco.No}</div>
+                                                                                            </aura:set>
+                                                                                        </aura:if>
+                                                                                    </aura:if>
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </aura:if>
+                                                                    </aura:iteration>
+                                                                </td>
+                                                            </aura:iteration>
+                                                            <aura:if isTrue="{!and(v.sObjectName != 'cuco__profitability_sheet__c', v.managePermissions.remove == true)}">
+                                                                <td class="slds-text-align_center" data-label="{!$Label.cuco.remove}" style="padding-right:0.5rem;">
+                                                                    <div onclick="{!c.removeCondition}" data-id="{!condition.id}" class="icon-blue" title="{!$Label.cuco.remove}">
+                                                                        <lightning:icon iconName="utility:delete" size="xx-small"  class="slds-current-color" />
+                                                                    </div>
+                                                                </td>
+                                                            </aura:if>
+                                                        </tr>
+                                                    </aura:if>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                    </aura:if>
+
+                                </div>
+                            </aura:set>
+                        </lightning:accordionSection>
+                    </aura:iteration>
+                </lightning:accordion>
+            </lightning:accordionSection>
+        </aura:iteration>
+        </lightning:accordion>
+    </aura:set>
+    </aura:if>
+  </div>
+  {!v.body}
+</aura:component>

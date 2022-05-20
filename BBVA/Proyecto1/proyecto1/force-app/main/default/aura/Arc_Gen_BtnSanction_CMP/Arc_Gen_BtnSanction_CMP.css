@@ -1,0 +1,7 @@
+.THIS lightning-icon.some-success > lightning-primitive-icon > svg > use {
+  fill: green;
+}
+
+.THIS lightning-icon.some-warning > lightning-primitive-icon > svg > use {
+  fill: red;
+}

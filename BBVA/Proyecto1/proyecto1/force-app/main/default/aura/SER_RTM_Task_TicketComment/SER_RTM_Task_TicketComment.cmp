@@ -1,0 +1,22 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global"
+extends="c:SER_Connection" controller="SER_CallRemedyWebServiceLGT_Task">
+  <aura:attribute name="id_TaskID" type="Id" access="public"/>
+  <aura:attribute name="st_Comment" type="String" access="public"/>
+  <aura:attribute name="sendLastCom" type="Boolean" access="public" default="false"/>
+  <aura:attribute name="renderSendLastCom" type="Boolean" access="public" default="true"/>
+  <aura:attribute name="label" type="String" access="public" default="Comment"/>
+  <aura:attribute name="info" type="String" access="public"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+  <lightning:card >
+    <lightning:layout multipleRows="true">
+      <aura:if isTrue="{!v.renderSendLastCom}">
+        <lightning:layoutItem size="12">
+          <ui:inputCheckbox aura:id="checkbox" label=" Send Last Comment" click="{!c.fn_ToggleSendLastComment}" value="{!v.sendLastCom}"/>
+        </lightning:layoutItem>
+      </aura:if>
+      <lightning:layoutItem size="12">
+        <lightning:textarea aura:id="ta" name="txtarea_CommentInput" value="{!v.st_Comment}" label="{!v.label}"  disabled="true" title="{!v.info}" />
+      </lightning:layoutItem>
+    </lightning:layout>
+  </lightning:card>
+</aura:component>

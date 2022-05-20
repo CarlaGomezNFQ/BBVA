@@ -1,0 +1,14 @@
+<aura:component controller="SER_ButtonNotification_CONTROLLER"
+        implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+        access="global" >
+  <aura:attribute name="EmailNotCases" type="Case"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <div class="slds-page-header slds-grid forceActionsContainer slds-box_x-small slds-align_absolute-center  ">
+    <div class="slds-size_0-of-1">
+      <div class="slds-box_x-small ">
+        <lightning:button class="btn slds-button slds-button--neutral not-selected slds-not-selected uiButton  "
+          label="Email Notification" onclick="{!c.requestCaseEmailNotification}" />
+      </div>
+    </div>
+  </div>
+</aura:component>

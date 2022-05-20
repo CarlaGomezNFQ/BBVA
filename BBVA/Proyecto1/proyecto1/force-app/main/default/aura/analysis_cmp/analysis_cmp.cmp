@@ -1,0 +1,91 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="cuco.Analysis_ctrl">
+
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    <aura:handler event="cuco:refresh_analysis_evt" action="{!c.handleRefreshAnalysis}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:attribute name="manage" type="Boolean" default="false" />
+    <aura:attribute name="showModal" type="Boolean" default="false" />
+    <aura:attribute name="error" type="Boolean" default="false" />
+    <aura:attribute name="manageMessage" type="String" />
+    <aura:attribute name="profAnalysis" type="Object" />
+    <aura:attribute name="flag" type="Boolean" />
+    <aura:attribute name="flagAux" type="Boolean" />
+    <aura:attribute name="comments" type="String" />
+    <aura:attribute name="contracExceptDetail" type="String" />
+
+    <aura:attribute name="showTooltip" type="Boolean" default="false" />
+    <aura:attribute name="hasComments" type="Boolean" default="false" />
+
+    <article class="slds-card">
+        <div class="slds-box slds-m-bottom_large">
+            <div aura:id="loadSpinner">
+                <lightning:spinner alternativeText="loading..." variant="brand" size="large" />
+            </div>
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+                        <lightning:icon class="slds-icon" iconName="standard:note" />
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">{!$Label.cuco.analysis_title}</h2>
+                    </div>
+                    <aura:if isTrue="{!v.manage}">
+                        <div class="slds-no-flex">
+                            <button onclick="{!c.handleEditClick}" class="slds-button slds-button_neutral">
+                                <lightning:icon iconName="utility:edit" size="xx-small" class="slds-current-color slds-m-right_x-small" />{!$Label.cuco.analysis_edit_button}
+                            </button>
+                        </div>
+                    </aura:if>
+                </header>
+            </div>
+            <div class="slds-card__body">
+                <div class="slds-grid slds-grid_vertical">
+                    <div class="slds-col">
+                        <label class="slds-form-element__label">{!$Label.cuco.analysis_comments}</label>
+                        <button onmouseover="{!c.showToolTip}" onmouseout="{!c.hideToolTip}" class="slds-button slds-button--icon">
+                            <lightning:icon class="slds-p-bottom_xx-small" iconName="utility:info" size="xx-small" />
+                            <aura:if isTrue="{!v.showTooltip}">
+                                <div class="slds-popover slds-popover--tooltip slds-nubbin--left-top tooltipStyle" role="tooltip" id="help" aura:id="tooltip">
+                                    <div class="slds-popover__body">{!$Label.cuco.analysis_comments_tooltip}</div>
+                                </div>
+                            </aura:if>
+                        </button>
+                        <aura:if isTrue="{!v.hasComments}">
+                            <div class="maxWidth">
+                                <span class="bigText">{!v.profAnalysis.cuco__gf_pa_comments_desc__c}</span>
+                            </div>
+                            <aura:set attribute="else">
+                                <div class="maxWidth">
+                                    {!$Label.cuco.analysis_no_comments_message}
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                    <div class="slds-border_bottom slds-m-vertical_medium maxWidth"></div>
+                    <div class="slds-col maxWidth">
+                        <label class="slds-form-element__label">{!$Label.cuco.analysis_contracts_flag}</label>
+                        <aura:if isTrue="{!v.profAnalysis.cuco__gf_all_ct_apply_cond_ind_type__c}">
+                            <div class="slds-m-bottom_medium">
+                                <span class="bigText">{!v.profAnalysis.cuco__gf_pa_all_ct_cond_app_rsn_desc__c}</span>
+                            </div>
+                            <div class="slds-col">
+                                <div class="slds-grid slds-grid_vertical-align-center">
+                                    <lightning:icon iconName="utility:info" size="xx-small" class="slds-m-right_small"/>
+                                    <lightning:formattedText class="slds-form-element__label" value="{!$Label.cuco.analysis_contracts_flag_help}" />
+                                </div>
+                            </div>
+                            <aura:set attribute="else">
+                                <div class="slds-m-bottom_medium">
+                                    {!$Label.cuco.analysis_no_contracts_details_message}
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+            <footer class="slds-card__footer"></footer>
+        </div>
+    </article>
+    {!v.body}
+</aura:component>

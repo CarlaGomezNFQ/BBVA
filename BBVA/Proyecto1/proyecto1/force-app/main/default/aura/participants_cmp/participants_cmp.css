@@ -1,0 +1,18 @@
+.THIS.bgColorCmp {
+  background-color: #fff !important;
+}
+
+.THIS .btnInLine {
+  line-height: inherit !important;
+  color: #0070d2 !important;
+  text-decoration: underline !important;
+}
+
+.THIS.windowHeight {
+  height: 280px !important;
+  min-height: 280px !important;
+}
+
+.THIS .maxHeight {
+  max-height: 250px !important;
+}

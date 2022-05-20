@@ -1,0 +1,11 @@
+.THIS .options-container {
+  padding: 1em 2em;
+}
+
+.THIS .options-container__options {
+  text-align: center;
+}
+
+.THIS .spinner-container {
+  min-height: 20em;
+}

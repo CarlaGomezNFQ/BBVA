@@ -1,0 +1,56 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" access="global" controller="cuco.CommPackages_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    <aura:handler event="cuco:refresh_comm_packages_evt" action="{!c.handleCommPkgEvt}"/>
+
+    <aura:attribute name="lstCommPkg" type="List"/>
+    <aura:attribute name="pkgPermissions" type="Object" />
+    <aura:attribute name="showError" type="Boolean" default="true"/>
+    <aura:attribute name="accordionTitle" type="String" default=""/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="sObjectName" type="String"/>
+    <aura:attribute name="showExtPkgCancelBanner" type="Boolean" default="false"/>
+    <aura:attribute name="errMessageBanner" type="String" default="{!$Label.cuco.comm_pkg_cancelled_with_extension}"/>
+
+    <div aura:id="loadSpinner">
+        <lightning:spinner aura:id="simpleSpinner" alternativeText="loading..." class="backOff" variant="brand" size="large" />
+    </div>
+    <lightning:accordion aura:id="accordion" allowMultipleSectionsOpen="true" activeSectionName="commPkgSection">
+        <lightning:accordionSection name="commPkgSection" label="{!$Label.cuco.comm_pkgs_section_title}">
+            <aura:if isTrue="{!v.showError}">
+                <div class=" slds-box slds-box_x-small slds-m-top_medium slds-align_absolute-center">
+                    {!$Label.cuco.none_comm_pkgs}
+                </div>
+                <aura:set attribute="else">
+                    <aura:if isTrue="{!v.showExtPkgCancelBanner}">
+                        <div class="slds-p-bottom_small">
+                            <mbr:messageBar bannerId="commPkgBanner" recordId="{!v.recordId}" forceDisplay="true" message="{!v.errMessageBanner}" iconName="utility:warning" iconVariant="inverse" style="slds-theme_error"/>
+                        </div>
+                    </aura:if>
+                    <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left">
+                        <div class="slds-grid slds-wrap backgroundHeader">
+                            <div class="slds-col slds-size_3-of-12 slds-p-vertical_x-small slds-p-left_x-large">
+                                {!$Label.cuco.comm_pkg_code}
+                            </div>
+                            <div class="slds-col slds-size_4-of-12 slds-p-vertical_x-small">
+                                {!$Label.cuco.comm_pkg_desc}
+                            </div>
+                            <div class="slds-col slds-size_3-of-12 slds-p-vertical_x-small">
+                                {!$Label.cuco.comm_pkg_status}
+                            </div>
+                            <div class="slds-col slds-size_2-of-12 slds-p-vertical_x-small">
+                                {!$Label.cuco.comm_pkg_endDate}
+                            </div>
+                        </div>
+                        <aura:iteration items="{!v.lstCommPkg}" var="commPkg" indexVar="i">
+                            <div class="slds-border_bottom">
+                                <cuco:comm_packages_detail_cmp commPkg="{!commPkg}" recordId="{!v.recordId}" sObjectName="{!v.sObjectName}" pkgPermissions="{!v.pkgPermissions}"/>
+                            </div>
+                        </aura:iteration>
+                    </div>
+                </aura:set>
+            </aura:if>
+        </lightning:accordionSection>
+    </lightning:accordion>
+</aura:component>

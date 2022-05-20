@@ -1,0 +1,309 @@
+<aura:component extends="dwp_mdal:ModalTemplate_cmp"  access="global" controller="cuco.Flat_Rates_Setup_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="flatRatesSetupHelpEvt" event="cuco:flat_rates_setup_help_evt" action="{!c.handleModalCallback}"/>
+    <aura:registerEvent name="flatRatesSetupContinueEvt" type="cuco:flat_rates_setup_continue_evt"/>
+    <aura:registerEvent name="refresh_conditions_evt" type="cuco:refresh_conditions_evt"/>
+
+    <!-- Modal attributes -->
+    <aura:attribute name="hide" type="Boolean" default="false" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="closeButton" type="Boolean" default="true" />
+    <aura:attribute name="hasHeader" type="Boolean" default="true" />
+    <aura:attribute name="modalSizeSLDS" type="String" default="slds-modal_small" />
+
+    <!-- Component attributes -->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="conditionsSelected" type="List" />
+    <aura:attribute name="isSuccess" type="Boolean" default="false" />
+    <aura:attribute name="hasDynamicPricing" type="Boolean" default="false" />
+    <aura:attribute name="paTypology" type="String" />
+    <aura:attribute name="requestedFlatRate" type="Object" />
+    <aura:attribute name="currentPSFlatRate" type="Object" />
+    <aura:attribute name="labelsFlatRate" type="Object" />
+    <aura:attribute name="picklistFlatRate" type="Object" />
+    <aura:attribute name="paFlatRateAccs" type="List" />
+    <aura:attribute name="pygCatAccs" type="List" />
+    <aura:attribute name="accountComments" type="String" />
+    <aura:attribute name="currentPriceType" type="String" />
+    <aura:attribute name="lstConditions" type="List" />
+    <aura:attribute name="showHelpCmp" type="Boolean" default="false" />
+    <aura:attribute name="paFlatRateId" type="String" />
+
+    <aura:set attribute="title" value="{!$Label.cuco.select_flat_cond_title}" />
+
+    <div aura:id="simpleSpinner">
+        <lightning:spinner alternativeText="loading..." variant="brand" size="large" />
+    </div>
+    <aura:if isTrue="{!v.isSuccess}">
+        <div class="slds-modal__content slds-p-horizontal_x-large slds-p-vertical_medium">
+            <div class="slds-grid slds-grid_vertical">
+                <!-- First section -->
+                <div class="slds-col">
+                    <div class="slds-grid slds-grid_vertical">
+                        <!-- First section title -->
+                        <div class="slds-col">
+                            <legend class="slds-form-element__legend slds-form-element__label title slds-p-vertical_small">{!$Label.cuco.flat_rates_amounts}</legend>
+                        </div>
+                        <!-- First section price type radio buttons-->
+                        <div class="slds-col slds-p-bottom_medium">
+                            <div class="slds-form-element__control">
+                                <lightning:radioGroup aura:id="priceType" label="{!v.labelsFlatRate.priceType}" options="{!v.picklistFlatRate.priceType}" value="{!v.currentPriceType}" onchange="{!c.handlePriceTypeChange}" type="radio" class="radioInLine legendWithoutBold" />
+                            </div>
+                        </div>
+                        <!-- First section comments variable amount -->
+                        <div class="slds-col slds-p-bottom_medium">
+                            <aura:if isTrue="{!v.currentPriceType == 'EF'}">
+                                <lightning:textarea aura:id="variableAmountDesc" label="{!v.labelsFlatRate.variableAmountDesc}" value="{!v.requestedFlatRate.variableAmountDesc}" maxlength="255"/>
+                            </aura:if>
+                        </div>
+                        <!-- First section flat rates table-->
+                        <div class="slds-col slds-p-bottom_medium">
+                            <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered">
+                                <thead>
+                                    <tr class="slds-grid slds-wrap slds-border_left slds-border_right">
+                                        <th class="slds-size_4-of-6 noPaddingLeft slds-p-left_small" scope="col">
+                                            <div class="slds-truncate slds-p-vertical_x-small slds-p-left_x-small" title="{!$Label.cuco.flat_rates_condition}">{!$Label.cuco.flat_rates_condition}</div>
+                                        </th>
+                                        <th class="slds-size_1-of-6 textAlignRight" scope="col">
+                                            <div class="slds-truncate slds-p-vertical_x-small" title="{!$Label.cuco.actual}">{!$Label.cuco.actual}</div>
+                                        </th>
+                                        <th class="slds-size_1-of-6 textAlignRight noPaddingRight slds-p-right_small" scope="col">
+                                            <div class="slds-truncate slds-p-vertical_x-small slds-p-right_x-small" title="{!$Label.cuco.proposed}">{!$Label.cuco.proposed}</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Fixed annual amount, only if priceType is Fixed -->
+                                    <aura:if isTrue="{!v.currentPriceType == 'IF'}">
+                                        <tr class="slds-grid slds-wrap slds-border_left slds-border_right">
+                                            <td class="slds-size_4-of-6 noPaddingLeft slds-p-left_small">
+                                                <div class="slds-truncate slds-p-vertical_x-small slds-p-left_x-small">{!v.labelsFlatRate.fixedAmount}</div>
+                                            </td>
+                                            <td class="slds-size_1-of-6 textAlignRight" scope="col">
+                                                <aura:if isTrue="{!v.currentPSFlatRate.fixedAmount == null}">
+                                                    <div class="slds-p-vertical_x-small">-</div>
+                                                    <aura:set attribute="else">
+                                                        <div class="slds-truncate slds-p-vertical_x-small">{!v.currentPSFlatRate.fixedAmount}</div>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </td>
+                                            <td class="slds-size_1-of-6 textAlignRight noPaddingRight slds-p-right_small">
+                                                <lightning:input aura:id="fixedAmount" class="slds-p-right_x-small" type="number" value="{!v.requestedFlatRate.fixedAmount}" variant="label-hidden" formatter="decimal" step="0.01" maxlength="18"/>
+                                            </td>
+                                        </tr>
+                                    </aura:if>
+                                    <!-- Charge type row -->
+                                    <tr class="slds-grid slds-wrap slds-border_left slds-border_right">
+                                        <td class="slds-size_4-of-6 noPaddingLeft slds-p-left_small">
+                                            <div class="slds-truncate slds-p-vertical_x-small slds-p-left_x-small">{!v.labelsFlatRate.chargeType}</div>
+                                        </td>
+                                        <td class="slds-size_1-of-6 textAlignRight" scope="col">
+                                            <aura:if isTrue="{!v.currentPSFlatRate.chargeType == null}">
+                                                <div class="slds-p-vertical_x-small">-</div>
+                                                <aura:set attribute="else">
+                                                    <div class="slds-truncate slds-p-vertical_x-small">{!v.currentPSFlatRate.chargeType}</div>
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <td class="slds-size_1-of-6 textAlignRight noPaddingRight slds-p-right_small">
+                                            <lightning:select aura:id="chargeType" value="{!v.requestedFlatRate.chargeType}" class="label-hidden slds-p-right_x-small">
+                                                <aura:iteration items="{!v.picklistFlatRate.chargeType}" var="chargeTypeItem">
+                                                    <option value="{!chargeTypeItem.value}">{!chargeTypeItem.label}</option>
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </td>
+                                    </tr>
+                                    <!-- Charge Periodicity row -->
+                                    <tr class="slds-grid slds-wrap slds-border_left slds-border_right">
+                                        <td class="slds-size_4-of-6 noPaddingLeft slds-p-left_small">
+                                            <div class="slds-truncate slds-p-vertical_x-small slds-p-left_x-small">{!v.labelsFlatRate.periodicityChageType}</div>
+                                        </td>
+                                        <td class="slds-size_1-of-6 textAlignRight" scope="col">
+                                            <aura:if isTrue="{!v.currentPSFlatRate.periodicityChageType == null}">
+                                                <div class="slds-p-vertical_x-small">-</div>
+                                                <aura:set attribute="else">
+                                                    <div class="slds-truncate slds-p-vertical_x-small">{!v.currentPSFlatRate.periodicityChageType}</div>
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <td class="slds-size_1-of-6 textAlignRight noPaddingRight slds-p-right_small">
+                                            <lightning:select aura:id="periodicityChageType" value="{!v.requestedFlatRate.periodicityChageType}" class=" label-hidden slds-p-right_x-small">
+                                                <aura:iteration items="{!v.picklistFlatRate.periodicityChageType}" var="periodicityChageTypeItem">
+                                                    <option value="{!periodicityChageTypeItem.value}">{!periodicityChageTypeItem.label}</option>
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </td>
+                                    </tr>
+                                    <!-- Currency row -->
+                                    <tr class="slds-grid slds-wrap slds-border_left slds-border_right">
+                                        <td class="slds-size_4-of-6 noPaddingLeft slds-p-left_small">
+                                            <div class="slds-truncate slds-p-vertical_x-small slds-p-left_x-small">{!v.labelsFlatRate.currencyType}</div>
+                                        </td>
+                                        <td class="slds-size_1-of-6 textAlignRight" scope="col">
+                                            <aura:if isTrue="{!v.currentPSFlatRate.currencyType == null}">
+                                                <div class="slds-p-vertical_x-small">-</div>
+                                                <aura:set attribute="else">
+                                                    <div class="slds-truncate slds-p-vertical_x-small">{!v.currentPSFlatRate.currencyType}</div>
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <td class="slds-size_1-of-6 textAlignRight noPaddingRight slds-p-right_small">
+                                            <lightning:select aura:id="currencyType" value="{!v.requestedFlatRate.currencyType}" class="label-hidden slds-p-right_x-small">
+                                                <aura:iteration items="{!v.picklistFlatRate.currencyType}" var="currencyTypeItem">
+                                                    <option value="{!currencyTypeItem.value}">{!currencyTypeItem.label}</option>
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!-- End table -->
+                        </div>
+                        <!-- Charge day section -->
+                        <div class="slds-col slds-p-bottom_medium">
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-2 slds-p-right_small">
+                                    <lightning:select aura:id="chargeDay" value="{!v.requestedFlatRate.chargeDay}" label="{!v.labelsFlatRate.chargeDay}">
+                                        <aura:iteration items="{!v.picklistFlatRate.chargeDay}" var="chargeDayItem">
+                                            <option value="{!chargeDayItem.value}">{!chargeDayItem.label}</option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Non Working Day and Acc withput balance section -->
+                        <div class="slds-col slds-p-bottom_medium">
+                            <div class="slds-grid slds-wrap">
+                                <!-- Non Working Day section -->
+                                <div class="slds-col slds-size_1-of-2 slds-p-right_small">
+                                    <lightning:select aura:id="nonWorkingDayChargeMethod" value="{!v.requestedFlatRate.nonWorkingDayChargeMethod}" label="{!v.labelsFlatRate.nonWorkingDayChargeMethod}">
+                                        <aura:iteration items="{!v.picklistFlatRate.nonWorkingDayChargeMethod}" var="nonWorkingDayChargeItem">
+                                            <option value="{!nonWorkingDayChargeItem.value}">{!nonWorkingDayChargeItem.label}</option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                                <!-- Acc without balance section -->
+                                <div class="slds-col slds-size_1-of-2 slds-p-left_small">
+                                    <lightning:select aura:id="accWithoutBalanceMethod" value="{!v.requestedFlatRate.accWithoutBalanceMethod}" label="{!v.labelsFlatRate.accWithoutBalanceMethod}">
+                                        <aura:iteration items="{!v.picklistFlatRate.accWithoutBalanceMethod}" var="accWithoutBalanceItem">
+                                            <option value="{!accWithoutBalanceItem.value}">{!accWithoutBalanceItem.label}</option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Invoice Comments section -->
+                        <div class="slds-col slds-p-bottom_medium">
+                            <lightning:textarea aura:id="invoceComments" label="{!v.labelsFlatRate.invoceComments}" value="{!v.requestedFlatRate.invoceComments}" maxlength="1000"/>
+                        </div>
+                    </div>
+                </div>
+                <!-- Second section -->
+                <div class="slds-col">
+                    <div class="slds-grid slds-grid_vertical">
+                        <!-- Second section title -->
+                        <div class="slds-col slds-p-bottom_medium">
+                            <div class="slds-grid slds-wrap slds-grid_vertical-align-center">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <legend class="slds-form-element__legend slds-form-element__label title">{!$Label.cuco.flat_rates_account_title}</legend>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning:button class="slds-float_right" label="{!$Label.cuco.flat_rates_account_detail}" iconName="utility:help" iconPosition="left" onclick="{!c.handleFlatRatesHelpButton}" />
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Help cmp -->
+                        <aura:if isTrue="{!v.showHelpCmp}">
+                            <cuco:flat_rates_setup_help_cmp pygCatAccs="{!v.pygCatAccs}" />
+                        </aura:if>
+                        <!-- End help cmp-->
+                        <!-- Second section table-->
+                        <div class="slds-col slds-p-bottom_medium">
+                            <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered">
+                                <thead>
+                                    <tr class="slds-grid slds-wrap slds-border_left slds-border_right">
+                                        <th class="slds-size_6-of-12 noPaddingLeft slds-p-left_small" scope="col">
+                                            <div class="slds-truncate slds-p-vertical_x-small slds-p-left_x-small" title="{!$Label.cuco.flat_rates_account}">{!$Label.cuco.flat_rates_account}</div>
+                                        </th>
+                                        <th class="slds-size_6-of-12" scope="col">
+                                            <div class="slds-truncate slds-p-vertical_x-small" title="{!$Label.cuco.flat_rates_account_use}">{!$Label.cuco.flat_rates_account_use}</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- PyG Account -->
+                                    <aura:iteration items="{!v.paFlatRateAccs}" var="paFlatRateAcc" indexVar="pygRow">
+                                        <tr class="slds-grid slds-wrap slds-border_left slds-border_right">
+                                            <td class="slds-size_6-of-12 noPaddingLeft slds-p-left_small">
+                                                <lightning:select aura:id="paFlatRateAcc" value="{!paFlatRateAcc.accId}" class="label-hidden slds-p-left_x-small">
+                                                    <aura:iteration items="{!v.pygCatAccs}" var="pygCatAcc">
+                                                        <option value="{!pygCatAcc.id}">{!pygCatAcc.name}</option>
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </td>
+                                            <td class="slds-size_5-of-12 textAlignRight noPaddingRight slds-p-right_small">
+                                                <lightning:input aura:id="usePercent" class="slds-p-right_x-small" type="number" value="{!paFlatRateAcc.usePercent}" variant="label-hidden" formatter="decimal" step="0.01" maxlength="5"/>
+                                            </td>
+                                            <td class="slds-size_1-of-12 slds-grid_vertical-align-center">
+                                                <lightning:buttonIcon name="{!pygRow}" iconName="utility:delete" variant="bare" onclick="{!c.handleDeletePyG}" alternativeText="{!$Label.cuco.alternative_text_delete}" class="blueIcon slds-m-top_x-small"/>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="slds-col slds-p-bottom_medium">
+                            <lightning:button class="slds-grid_vertical-align-center" label="{!$Label.cuco.flat_rates_add_account}" iconName="utility:add" iconPosition="left" onclick="{!c.handleAddPyGAcc}" />
+                        </div>
+                        <!-- Second section account comments -->
+                        <div class="slds-col slds-p-bottom_medium">
+                            <lightning:textarea aura:id="accountComments" label="{!$Label.cuco.flat_rates_accounts_comments_help}" value="{!v.accountComments}" maxlength="1000"/>
+                        </div>
+                    </div>
+                </div>
+                <!-- Third section -->
+                <div class="slds-col">
+                    <div class="slds-grid slds-grid_vertical">
+                        <!-- Third section title -->
+                        <div class="slds-col">
+                            <legend class="slds-form-element__legend slds-form-element__label title slds-p-vertical_small">{!$Label.cuco.flat_rates_conditions}</legend>
+                        </div>
+                        <!-- Third section table -->
+                        <div class="slds-col slds-p-bottom_medium">
+                            <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered">
+                                <thead>
+                                    <tr class="slds-grid slds-wrap slds-border_left slds-border_right">
+                                        <th class="slds-size_8-of-12 noPaddingLeft slds-p-left_small" scope="col">
+                                            <div class="slds-truncate slds-p-vertical_x-small slds-p-left_x-small">{!$Label.cuco.flat_rates_condition}</div>
+                                        </th>
+                                        <th class="slds-size_4-of-12" scope="col">
+                                            <div class="slds-truncate slds-p-vertical_x-small" title="{!$Label.cuco.flat_rates_condition_volume}">{!$Label.cuco.flat_rates_condition_volume}</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.lstConditions}" var="condition">
+                                        <tr class="slds-grid slds-wrap slds-border_left slds-border_right">
+                                            <td class="slds-size_8-of-12 noPaddingLeft slds-p-left_small">
+                                                <div class="slds-truncate slds-p-vertical_x-small slds-p-left_x-small">{!condition.name}</div>
+                                            </td>
+                                            <td class="slds-size_4-of-12 noPaddingRight slds-p-right_small">
+                                                <lightning:input aura:id="condition" class="slds-p-right_x-small" type="number" value="{!condition.estOpVol}" name="{!condition.id}" variant="label-hidden" maxlength="18"/>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                            <!-- End third section table -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="{!$Label.cuco.cancel}" onclick="{!c.handleFlatRatesSetupCancel}" class="slds-float_left" />
+            <lightning:button variant="brand" label="{!v.hasDynamicPricing ? $Label.cuco.save_next : $Label.cuco.save}" onclick="{!c.handleFlatRatesSetupSave}" />
+        </footer>
+    </aura:if>
+</aura:component>

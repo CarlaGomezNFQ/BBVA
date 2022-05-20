@@ -1,0 +1,81 @@
+<aura:component extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="cuco.CommPackageEdit_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:registerEvent name="refreshCommPackages" type="cuco:refresh_comm_packages_evt"/>
+    <aura:registerEvent name="refresh_conditions_evt" type="cuco:refresh_conditions_evt"/>
+    <aura:registerEvent name="refresh_flat_rates_evt" type="cuco:refresh_flat_rates_evt"/>
+
+    <!-- Modal attributes -->
+    <aura:attribute name="hide" type="Boolean" default="false" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="closeButton" type="Boolean" default="true" />
+    <aura:attribute name="hasHeader" type="Boolean" default="true" />
+    <aura:attribute name="modalSizeSLDS" type="String" default="slds-modal_small" />
+
+    <!-- Attributes from comm_packages_detail -->
+    <aura:attribute name="profAnalysisId" type="String"/>
+    <aura:attribute name="commPkg" type="Object"/>
+
+    <!-- General attributes -->
+    <aura:attribute name="isSuccess" type="Boolean" default="false" />
+    <aura:attribute name="originalDecision" type="Boolean" default="false"/>
+    <aura:attribute name="currentDecision" type="Boolean" default="false"/>
+    <aura:attribute name="step" type="String" default="1" />
+    <aura:attribute name="lstPAC" type="List" />
+
+    <aura:set attribute="title" value="{!$Label.cuco.comm_pkg_edit_title}" />
+
+    <div aura:id="loadSpinner">
+        <lightning:spinner alternativeText="loading..." variant="brand" size="large" />
+    </div>
+    <aura:if isTrue="{!v.isSuccess}">
+        <div class="slds-modal__content slds-p-around_xx-large">
+            <aura:if isTrue="{!v.step == '1'}">
+                <div class="slds-grid slds-wrap slds-p-top_xx-large">
+                    <div class="slds-col slds-size_2-of-12 slds-p-right_large">
+                        <div class="actionChoice">
+                            <input onclick="{!c.handleDecisionClick}" type="checkbox" name="pkg_extend" id="pkg_extend" checked="{!v.currentDecision}"></input>
+                            <label class="Science_blue" for="pkg_extend">
+                                <lightning:icon iconName="utility:expand_alt" size="small"/>
+                                <div class="slds-truncate">{!$Label.cuco.pkg_extend}</div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_10-of-12 slds-p-left_medium slds-col slds-align-middle">
+                        <h2 class="slds-text-title_bold">{!$Label.cuco.pkg_extend_help_title}</h2>
+                        <span>{!$Label.cuco.pkg_extend_help_subtitle}</span>
+                    </div>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.step == '2'}">
+                <div class="slds-grid slds-grid_vertical">
+                    <!-- Banner -->
+                    <div class="slds-col">
+                        <div class="slds-p-bottom_medium">
+                            <mbr:messageBar bannerId="commEditPkgBanner" recordId="{!v.profAnalysisId}" forceDisplay="true" message="{!$Label.cuco.pkg_extend_overwrite_banner}" iconName="utility:warning"/>
+                        </div>
+                    </div>
+
+                    <!-- Title -->
+                    <div class="slds-col slds-p-vertical_xx-small">
+                        <h2 class="slds-text-title_bold">{!$Label.cuco.pkg_extend_help_title}</h2>
+                    </div>
+
+                    <!-- Conditions -->
+                    <div class="slds-col">
+                        <ul>
+                            <aura:iteration items="{!v.lstPAC}" var="pac">
+                                <li class="slds-p-left_small slds-p-vertical_xx-small">{!pac.cuco__gf_psc_condition_id__r.Name}</li>
+                            </aura:iteration>
+                        </ul>
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+        <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="{!$Label.cuco.cancel}" onclick="{!c.handleCancel}" class="slds-float_left" />
+            <lightning:button variant="brand" label="{!$Label.cuco.save}" onclick="{!c.handleSave}" />
+        </footer>
+    </aura:if>
+</aura:component>

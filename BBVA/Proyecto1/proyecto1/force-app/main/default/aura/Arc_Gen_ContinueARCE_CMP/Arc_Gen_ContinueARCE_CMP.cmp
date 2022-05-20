@@ -1,0 +1,34 @@
+<!--
+  @Component Name     : Arc_Gen_ContinueARCE_CMP.cmp
+  @Description        : Component that calls the modal of creation of the analysis when it is postponed
+  @Author             : ARCE TEAM
+  @Group              : ARCE
+  @Last Modified By   : Global Desktop
+  @Last Modified On   : 14-12-2021
+  @Modification Log   :
+  ==============================================================================
+  Ver         Date                     Author      		      	Modification
+  ==============================================================================
+  1.0    XX/7/2019            ARCE TEAM     		    		        Initial Version
+  1.1    06/7/2019   		  angel.fuertes2@bbva.com               Add functionallity to redirect to valid Arce
+  1.2    19/5/2020   joseluis.garcia4.contractor@bbva.com       Add resume ARCE functionality for RAIP.
+  1.2    28/9/2020   juanignacio.hita.contractor@bbva.com       Change controller class
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasSObjectName,force:hasRecordId" controller="Arc_Gen_NewAnalysis_Controller" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.initHandler}" description="Init variable"/>
+    <aura:handler name="closeModalEvent" event="c:Arc_Gen_WizardEvent_evt" action="{!c.closeModal}" description="Event to closes the modal" />
+
+    <aura:attribute name="idGroup" type="String" access="global" description="Id record Group"/>
+    <aura:attribute name="load" type="boolean" default="false" description="Indicates if the component is active"/>
+    <aura:attribute name="arceTypeToContinue" type="String" description="Type of the ARCE to resume" />
+    <aura:if isTrue="{!v.load}">
+      <div class="slds-m-around_xx-large" aura:id="mymodal">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+          <div class="slds-modal__container">
+            <c:Arc_Gen_NewAnalysis_modal recordId="{!v.idGroup}" sObjectName="Local_Client__c" continue="true" arceTypeToContinue="{!v.arceTypeToContinue}" showCloseButton="true" />
+          </div>
+        </section>
+        <div aura:id="mymodal" class="slds-backdrop slds-backdrop_open"></div>
+      </div>
+    </aura:if>
+</aura:component>

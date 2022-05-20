@@ -1,0 +1,99 @@
+<aura:component controller="cuco.ProfitabilityList_Ctrl" implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:hasRecordId" extends="dwp_mdal:ModalTemplate_cmp" access="global">
+  <!-- LC attributes -->
+  <aura:attribute name="recordId" type="String" access="global"/>
+  <aura:attribute name="currentId" type="String"/>
+  <aura:attribute name="currentps" type="String"/>
+  <aura:attribute name="cNew" type="Integer"/>
+  <aura:attribute name="cNovation" type="Integer"/>
+  <aura:attribute name="cRenewal" type="Integer"/>
+  <aura:attribute name="cCancellation" type="Integer"/>
+  <aura:attribute name="LName" type="String"/>
+  <aura:attribute name="Name" type="String"/>
+  <aura:attribute name="Type" type="String"/>
+  <aura:attribute name="tableTitle" type="String"/>
+  <!--<aura:attribute name="tableSubTitle" type="String"/>-->
+  <aura:attribute name="isSuccess" type="Boolean" default="false" />
+
+  <!--Modal Template -->
+  <aura:attribute name="title" type="String" default="{!$Label.cuco.list_title}" access="global"/>
+  <aura:attribute name="modalSizeSLDS" type="String" default="slds-modal_medium"/>
+  <aura:attribute name="modalWidthCustom" type="String" default="70rem"/>
+  <!--MessageBar-->
+  <aura:attribute name="showErrBanner" type="Boolean" default="false" />
+  <aura:attribute name="errMessageBanner" type="String"/>
+  <aura:attribute name="style" type="String" default="slds-theme_warning" />
+  <aura:attribute name="iconName" type="String" default="utility:sentiment_negative" />
+  <aura:attribute name="forceDisplay" type="Boolean" default="false" />
+  <aura:attribute name="showBanner" type="Boolean" default="false" />
+  <!--TreeGrid-->
+  <aura:attribute name="gridColumns" type="List"/>
+  <aura:attribute name="gridData" type="Object"/>
+  <aura:attribute name="gridExpandedRows" type="List"/>
+  <aura:attribute name="currentExpandedRows" type="String" />
+  <!--handlers-->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+  <div aura:id="loadSpinner">
+    <lightning:spinner alternativeText="loading..." variant="brand" size="large" />
+  </div>
+  <div class="slds-modal__content slds-p-around_medium">
+  <aura:if isTrue="{!v.showErrBanner}">
+      <div class="slds-p-around_x-small">
+        <mbr:messageBar bannerId="CreateErrBanner" recordId="{!v.recordId}" forceDisplay="true" message="{!v.errMessageBanner}" iconName="utility:warning"/>
+      </div>
+  </aura:if>
+  <aura:if isTrue="{!v.isSuccess}">
+      <div class="slds-grid slds-wrap">
+          <div class="slds-col slds-size_2-of-3">
+              <span>{!v.LName}</span>
+              <br></br>
+              <span>{!v.Name}</span>
+              <br></br>
+              <br></br>
+          </div>
+          <aura:if isTrue="{!or(and(v.Type =='orphan', v.gridData == null),(v.Type =='group' || v.Type =='subsidiary'))}">
+              <div class='slds-col slds-size_1-of-3'>
+                  <span class="slds-float_right">
+                      <lightning:button variant='neutral' iconName="utility:add" iconPosition='left' class='slds-float_left' onclick='{!c.handleCreate}'>{!$Label.cuco.new_request}</lightning:button>
+                  </span>
+              </div>
+          </aura:if>
+      </div>
+      <aura:if isTrue="{!and(v.Type =='subsidiary', v.gridData)}">
+          <div class="slds-grid slds-wrap">
+              <div class="slds-col">
+                  <span>{!$Label.cuco.client_ps}</span>
+                  <br></br>
+                  <a href="{!'/lightning/r/Account/'+  v.currentId + '/view'}">{!v.currentps}</a>
+              </div>
+          </div>
+      </aura:if>
+      <aura:if isTrue="{!v.gridData}">
+          <div class="slds-grid slds-grid_vertical">
+              <div class="slds-col slds-p-vertical_medium">
+                <div class="slds-text-heading_medium">{!v.tableTitle}</div>
+                <!--<label class="slds-form-element__label">{!v.tableSubTitle}</label> Commented for rollback in future, if needed -->
+              </div>
+              <div class="slds-col">
+                <lightning:treeGrid columns="{!v.gridColumns}"
+                    class="cols"
+                    data="{!v.gridData}"
+                    expandedRows="{!v.gridExpandedRows}"
+                    keyField="name"
+                    hideCheckboxColumn = "true"
+                    onrowselection="{!c.viewRecord}"
+                    is-loading ="true"
+                    oncustomtypea="{handleCustomTypeA}"
+                    aura:id="treeGrid"/>
+              </div>
+          </div>
+          <aura:set attribute="else">
+              <div class="slds-text-heading--center slds-m-bottom_small slds-text-align_center">{!$Label.cuco.not_available_client_ps}</div>
+          </aura:set>
+      </aura:if>
+      </aura:if>
+    </div>
+    <footer class='slds-modal__footer slds-theme_default'>
+        <lightning:button variant='neutral' iconPosition='left' class='slds-float_left' onclick='{!c.btnCancel}'>{!$Label.cuco.cancel}</lightning:button>
+    </footer>
+</aura:component>

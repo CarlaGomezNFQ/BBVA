@@ -1,0 +1,91 @@
+<aura:component access="global" controller="cuco.GipPackagesDetail_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:attribute name="gipPkg" type="Object"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="sObjectName" type="String"/>
+    <aura:attribute name="canEditGipPkg" type="Boolean" default="false"/>
+    <aura:attribute name="canCancelGipPkg" type="Boolean" default="false"/>
+    <aura:attribute name="canUndoCancelGipPkg" type="Boolean" default="false"/>
+    <aura:attribute name="pkgPermissions" type="Object" />
+
+    <aura:handler name="change" value="{!v.gipPkg}" action="{!c.doInit}"/>
+
+    <div class="slds-grid slds-wrap">
+        <!-- Detail header -->
+        <div class="slds-col slds-size_7-of-12 slds-p-vertical_x-small slds-text-title_bold">
+            <lightning:buttonIcon class="slds-p-horizontal_x-small" iconName="utility:chevrondown" variant="bare" aura:id="gipPkgIconCollapsible" onclick="{!c.handleGipClickCollapsibleIcon}"/>
+            <lightning:formattedText value="{!v.gipPkg.description}" />
+        </div>
+        <div class="slds-col slds-size_3-of-12 slds-p-vertical_x-small">
+            <lightning:formattedText    class="{!or(v.gipPkg.status.id == 'Cancelled', v.gipPkg.requestStatus.id == 'Cancellation') ? 'slds-text-title_bold redIcon' : 'slds-text-title_bold'}"
+                                        value="{!and(v.gipPkg.requestStatus != null, v.gipPkg.status.value != null)
+                                                ? v.gipPkg.status.value + ' - ' + v.gipPkg.requestStatus.value
+                                                : (v.gipPkg.requestStatus == null ? v.gipPkg.status.value : v.gipPkg.requestStatus.value)}" />
+        </div>
+        <div class="slds-col slds-size_2-of-12 slds-p-vertical_x-small slds-text-title_bold">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_8-of-12">
+                    <lightning:formattedDateTime value="{!v.gipPkg.endDate}" year="numeric" month="2-digit" day="2-digit"/>
+                </div>
+                <div class="slds-col slds-size_2-of-12">
+                    <div class="slds-align_absolute-center">
+                        <aura:if isTrue="{!v.canEditGipPkg}">
+                            <lightning:buttonIcon iconName="utility:edit" variant="bare" onclick="{!c.handleGipEditClick}" alternativeText="{!$Label.cuco.alternative_text_edit}" class="blueIcon" tooltip="{!$Label.cuco.pkg_edit_tooltip}"/>
+                        </aura:if>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_2-of-12">
+                    <div class="slds-align_absolute-center">
+                        <aura:if isTrue="{!v.canCancelGipPkg}">
+                            <lightning:buttonIcon iconName="utility:delete" variant="bare" onclick="{!c.handleGipCancelClick}" alternativeText="{!$Label.cuco.alternative_text_delete}" class="blueIcon" tooltip="{!$Label.cuco.pkg_cancel_tooltip}"/>
+                        </aura:if>
+                        <aura:if isTrue="{!v.canUndoCancelGipPkg}">
+                            <lightning:buttonIcon iconName="utility:undo" variant="bare" onclick="{!c.handleGipCancelClick}" alternativeText="{!$Label.cuco.alternative_text_undo}" class="blueIcon" tooltip="{!$Label.cuco.pkg_undo_cancellation_button}"/>
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail body-->
+        <div class="slds-col" aura:id="gipPkgDetails">
+            <div class="slds-grid slds-grid_vertical">
+                <div class="slds-col">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size_1-of-3 slds-p-left_x-large">
+                            <div class="slds-form-element__label">
+                                {!$Label.cuco.gip_pkg_participant}
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <div class="slds-form-element__label">
+                                {!$Label.cuco.gip_pkg_clientRepName}
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <aura:if isTrue="{!and(v.gipPkg.requestStatus.id == 'New', v.sObjectName == 'cuco__profitability_analysis__c')}">
+                                <div class="slds-form-element__label">
+                                    {!$Label.cuco.gip_pkg_bankRepName}
+                                </div>
+                            </aura:if>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3 slds-p-left_x-large slds-p-bottom_medium">
+                            <lightning:formattedText value="{!v.gipPkg.participant.name}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3 slds-p-bottom_medium">
+                            <lightning:formattedText value="{!v.gipPkg.clientRepName}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3 slds-p-bottom_medium">
+                            <aura:if isTrue="{!and(v.gipPkg.requestStatus.id == 'New', v.sObjectName == 'cuco__profitability_analysis__c')}">
+                                <lightning:formattedText value="{!v.gipPkg.bankRepName}"/>
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {!v.body}
+</aura:component>

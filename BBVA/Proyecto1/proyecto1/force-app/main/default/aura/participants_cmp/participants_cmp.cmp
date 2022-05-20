@@ -1,0 +1,75 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" access="global" controller="cuco.Participants_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    <aura:handler event="cuco:refresh_participants_evt" action="{!c.doInit}"/>
+
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="sObjectName" type="String" />
+    <aura:attribute name="showTable" type="Boolean" default="false" />
+    <aura:attribute name="showErrBanner" type="Boolean" default="false" />
+    <aura:attribute name="tableTitle" type="String" />
+    <aura:attribute name="lstParticipantsDetails" type="List" />
+    <aura:attribute name="participantsBannerId" type="String" default="participantsErrBanner" />
+    <aura:attribute name="showAddButton" type="Boolean" default="false" />
+    <aura:attribute name="showRemoveButton" type="Boolean" default="false" />
+    <aura:attribute name="errMessageBanner" type="String" />
+
+    <aura:if isTrue="{!v.showTable}">
+        <div class="slds-box bgColorCmp windowHeight slds-p-bottom_medium">
+            <div class="slds-grid slds-grid_vertical">
+                <lightning:spinner aura:id="mySpinner" alternativeText="loading..." class="slds-hide" variant="brand" size="medium" />
+                <div class="slds-scrollable_y maxHeight">
+                    <div class="slds-col">
+                          <div class="slds-grid slds-wrap">
+                              <aura:if isTrue="{!v.showAddButton}">
+                                  <div class="slds-col slds-size_3-of-4 slds-text-align_left slds-p-left_small slds-p-top_x-small"><div class="slds-page-header__title"><b>{!v.tableTitle}</b></div></div>
+                                  <div class="slds-col slds-size_1-of-4 slds-text-align_right slds-p-right_small"><lightning:buttonIcon iconName="utility:add" onclick="{!c.handleAdd}"/></div>
+                                  <aura:set attribute="else">
+                                    <div class="slds-col slds-text-align_left slds-p-left_small slds-p-top_x-small"><div class="slds-page-header__title"><b>{!v.tableTitle}</b></div></div>
+                                  </aura:set>
+                              </aura:if>
+                          </div>
+                    </div>
+                    <div class="slds-col">
+                        <aura:if isTrue="{!v.showErrBanner}">
+                            <div class="slds-p-around_x-small">
+                                <mbr:messageBar bannerId="participantsErrBanner" recordId="{!v.recordId}" forceDisplay="true" message="{!v.errMessageBanner}" iconName="utility:info"/>
+                            </div>
+                            <aura:set attribute="else">
+                                <div class="slds-p-around_small">
+                                    <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered">
+                                        <thead class="slds-text-title_caps">
+                                            <tr class="slds-grid slds-wrap" focusable="true" scope="col">
+                                                <th class="slds-size_3-of-6 slds-text-align_left" scope="col"><div class="slds-truncate">{!$Label.cuco.subsidiary}</div></th>
+                                                <th class="slds-size_1-of-6 slds-text-align_left" scope="col"><div class="slds-truncate">{!$Label.cuco.documentNumber}</div></th>
+                                                <th class="slds-size_1-of-6 slds-text-align_left" scope="col"><div class="slds-truncate">{!$Label.cuco.rating}</div></th>
+                                                <th class="slds-size_1-of-6 slds-text-align_left" scope="col">&nbsp;</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.lstParticipantsDetails}" var="item" indexVar="index">
+                                                <tr class="slds-grid slds-wrap">
+                                                    <td class="slds-size_3-of-6 slds-text-align_left"><div class="slds-truncate"><lightning:formattedText value="{!item.partWrapper.participantName}"/></div></td>
+                                                    <td class="slds-size_1-of-6 slds-text-align_left"><lightning:formattedText value="{!item.partWrapper.documentNumber}"/></td>
+                                                    <td class="slds-size_1-of-6 slds-text-align_left"><lightning:formattedText value="{!item.partWrapper.rating}"/></td>
+                                                    <aura:if isTrue="{!v.showRemoveButton}">
+                                                        <td class="slds-size_1-of-6 slds-text-align_right"><lightning:button name="{!index}" class="btnInLine" variant="base" label="{!$Label.cuco.remove}" onclick="{!c.handleRemove}"/></td>
+                                                      <aura:set attribute="else">
+                                                        <td class="slds-size_1-of-6"></td>
+                                                      </aura:set>
+                                                    </aura:if>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+            {!v.body}
+        </div>
+    </aura:if>
+</aura:component>

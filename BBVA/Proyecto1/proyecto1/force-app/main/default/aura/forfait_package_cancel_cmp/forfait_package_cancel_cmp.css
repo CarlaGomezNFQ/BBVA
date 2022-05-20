@@ -1,0 +1,7 @@
+.THIS .slds-modal__content {
+  min-height: 20vh;
+}
+
+.THIS .slds-modal__container {
+  width: 45%;
+}

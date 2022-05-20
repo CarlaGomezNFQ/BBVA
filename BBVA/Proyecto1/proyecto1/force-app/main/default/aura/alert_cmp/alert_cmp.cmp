@@ -1,0 +1,11 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="cuco.Alert_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="profAnId" type="String" />
+    <aura:attribute name="bannerId" type="String" default="paAlertBannerId"/>
+
+    <mbr:messageBar bannerId="paAlertBannerId" recordId="{!v.recordId}" href="{!v.profAnId}"/>
+
+</aura:component>

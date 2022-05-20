@@ -1,0 +1,83 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+                controller="OppsCommercialActivityController" access="global">
+
+    <aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+    <aura:attribute name="country" type="String" default=""/>
+    <aura:attribute name="data" type="Object"/>
+    <ltng:require scripts="" afterScriptsLoaded="{!c.doInit}"/>
+
+    <aura:handler name="change" value="{!v.country}" action="{!c.doInit}"/>
+
+    <aura:if isTrue="{!empty(v.data)}">
+    	<div class="slds-box">
+        <div class="slds-text-align_center"><ui:outputText value="{!$Label.c.NoOppCurrentYear}"/></div>
+    	</div>
+
+    	<aura:set attribute="else">
+
+    	<aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+            <div aura:id="changeIt" class="Normal">
+
+                <table class="slds-card slds-table slds-table_col-bordered">
+                        <th scope="col" class="slds-size_1-of-6 slds-truncate cells-border customBackground">
+                            <div class="slds-text-title_caps slds-truncate">Total Opportunities(YTD)</div>
+                            <div class="horizontal slds-text-heading_medium"><strong><ui:outputNumber value="{!v.data[0].returnTotalOpp}"/></strong></div>
+                        </th>
+                    	<th scope="col" class="slds-size_1-of-6 slds-truncate cells-border customBackground">
+                            <div class="slds-text-title_caps slds-truncate">Won(YTD)</div>
+                            <div class="horizontal slds-text-heading_medium"><strong><ui:outputText value="{!v.data[0].returnWon}"/> M {!v.data[0].returnCurrencyCode} ({!v.data[0].oppWonNumber})</strong></div>
+                        </th>
+                    	<th scope="col" class="slds-size_1-of-6 slds-truncate cells-border customBackground">
+                            <div class="slds-text-title_caps slds-truncate">Lost(YTD)</div>
+                            <div class="horizontal slds-text-heading_medium"><strong><ui:outputText value="{!v.data[0].returnLost}" /> M {!v.data[0].returnCurrencyCode} ({!v.data[0].oppLostNumber})</strong></div>
+						</th>
+
+						<aura:if isTrue="{!$Label.c.DES_RT_Subsidiary == v.data[0].oppType}">
+							<th scope="col" class="slds-size_1-of-6 slds-truncate cells-border customBackground">
+								<div class="slds-text-title_caps slds-truncate">Hit/Miss</div>
+								<div class="horizontal slds-text-heading_medium"><strong><ui:outputText value="{!v.data[0].hitMiss}" /> %</strong></div>
+							</th>
+							<th scope="col" class="slds-size_1-of-6 slds-truncate cells-border customBackground">
+								<div class="slds-text-title_caps slds-truncate">Expected Revenues</div>
+								<div class="horizontal slds-text-heading_medium"><strong><ui:outputText value="{!v.data[0].returnLive}" /> M {!v.data[0].returnCurrencyCode} ({!v.data[0].oppLiveNumber})</strong></div>
+							</th>
+						</aura:if>
+                </table>
+            </div>
+
+         	<aura:set attribute="else">
+	         	<div aura:id="changeIt" class="Normal mobileCustomDiv slds-scrollable">
+	                <table class="slds-card slds-table slds-table_col-bordered">
+	                        <th scope="col" class="slds-size_1-of-6 slds-truncate cells-border customBackground">
+	                            <div class="slds-text-title_caps slds-truncate">Total Opportunities(YTD)</div>
+	                            <div class="horizontal slds-text-heading_medium"><strong><ui:outputNumber value="{!v.data[0].returnTotalOpp}"/></strong></div>
+	                        </th>
+	                    	<th scope="col" class="slds-size_1-of-6 slds-truncate cells-border customBackground">
+	                            <div class="slds-text-title_caps slds-truncate">Won(YTD)</div>
+	                            <div class="horizontal slds-text-heading_medium"><strong><ui:outputText value="{!v.data[0].returnWon}"/> M {!v.data[0].returnCurrencyCode} ({!v.data[0].oppWonNumber})</strong></div>
+	                        </th>
+	                    	<th scope="col" class="slds-size_1-of-6 slds-truncate cells-border customBackground">
+	                            <div class="slds-text-title_caps slds-truncate">Lost(YTD)</div>
+	                            <div class="horizontal slds-text-heading_medium"><strong><ui:outputText value="{!v.data[0].returnLost}" /> M {!v.data[0].returnCurrencyCode} ({!v.data[0].oppLostNumber})</strong></div>
+							</th>
+							<aura:if isTrue="{!$Label.c.DES_RT_Subsidiary == v.data[0].oppType}">
+								<th scope="col" class="slds-size_1-of-6 slds-truncate cells-border customBackground">
+									<div class="slds-text-title_caps slds-truncate">Hit/Miss</div>
+									<div class="horizontal slds-text-heading_medium"><strong><ui:outputText value="{!v.data[0].hitMiss}" /> %</strong></div>
+								</th>
+								<th scope="col" class="slds-size_1-of-6 slds-truncate cells-border customBackground">
+									<div class="slds-text-title_caps slds-truncate">Expected Revenues</div>
+									<div class="horizontal slds-text-heading_medium"><strong><ui:outputText value="{!v.data[0].returnLive}" /> M {!v.data[0].returnCurrencyCode} ({!v.data[0].oppLiveNumber})</strong></div>
+								</th>
+							</aura:if>
+	                </table>
+	            </div>
+
+         	</aura:set>
+   		 </aura:if>
+
+        </aura:set>
+
+    </aura:if>
+
+</aura:component>

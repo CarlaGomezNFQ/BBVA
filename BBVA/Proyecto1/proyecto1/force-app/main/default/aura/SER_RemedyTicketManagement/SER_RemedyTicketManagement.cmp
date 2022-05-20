@@ -1,0 +1,56 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+access="global" extends="c:SER_Connection" controller="SER_RTM_CallWS">
+
+      <aura:attribute name="isOpen" type="boolean" default="true"/>
+      <aura:attribute name="vcc" type="boolean" default="false" />
+      <aura:attribute name="error" type="boolean" default="false" />
+      <aura:attribute name="errormessage" type="String" access="private" default="" />
+
+      <aura:attribute name="id_CaseID" type="Id" access="public"/>
+      <aura:attribute name="case" type="Object" access="public"/>
+
+      <aura:attribute name="options" type="String[]" access="private" default=""/>
+      <aura:attribute name="st_SelectedOption" type="String" access="private" default=""/>
+      <aura:attribute name="toggleSpinner" type="boolean" default="false"/>
+
+      <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+
+      <aura:registerEvent name="closemodal" type="c:SER_CloseModalWindow"/>
+
+  <aura:if isTrue="{!v.isOpen}">
+    <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open slds-modal__footer_directional ">
+        <div class="slds-modal__container">
+          <div class="slds-modal__header">
+            <h1 id="header99" class="slds-text-heading--medium">Remedy Ticket Management</h1>
+            <aura:if isTrue="{!v.error}">
+              <h1 id="header98" class="slds-text-heading--medium" style="color: red; font-weight: 400;">{!v.errormessage}</h1>
+            </aura:if>
+          </div>
+          <div class="slds-modal__content slds-p-around--medium">
+        <lightning:tabset variant="scoped">
+            <aura:if isTrue="{!v.toggleSpinner}">
+              <div class="slds-spinner slds-spinner_medium" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+              </div>
+            </aura:if>
+              <aura:iteration items="{!v.options}" var="option">
+                <lightning:tab onactive="{!c.fn_handleActiveTab }" id="{!option}">
+                  <aura:set attribute="label">
+                    {!option}
+                  </aura:set>
+                    {!body}
+                </lightning:tab>
+              </aura:iteration>
+            </lightning:tabset>
+          </div>
+          <div class="slds-modal__footer">
+            <button class="slds-button slds-button--neutral" onclick="{!c.fn_CloseModal}">Cancel</button>
+            <button id="send-button" class="slds-button slds-button--brand" onclick="{!c.fn_RemedySend}">Send</button>
+          </div>
+        </div>
+    </div>
+  </aura:if>
+      <div class="slds-backdrop slds-backdrop--open"></div>
+</aura:component>

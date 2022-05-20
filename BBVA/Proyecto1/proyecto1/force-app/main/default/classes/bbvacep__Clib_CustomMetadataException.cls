@@ -1,0 +1,1 @@
+public class Clib_CustomMetadataException extends Exception {}

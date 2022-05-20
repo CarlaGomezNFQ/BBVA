@@ -1,0 +1,23 @@
+.THIS .accordion {
+  --sds-c-accordion-heading-font-size: 0.9rem;
+}
+
+.THIS .slds-modal__content {
+  overflow: auto;
+}
+
+.THIS .slds-datepicker.slds-day {
+  display: contents;
+  position: absolute;
+  right: -0.7px;
+}
+
+.THIS .slds-datepicker .slds-input__icon_right {
+  position: absolute;
+  left: 90%;
+  top: 20%;
+}
+
+.THIS .slds-accordion__list-item {
+  border-top: 0 !important;
+}

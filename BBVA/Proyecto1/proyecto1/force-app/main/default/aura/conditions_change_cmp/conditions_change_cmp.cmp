@@ -1,0 +1,215 @@
+<aura:component implements="force:hasRecordId" access="global" controller="cuco.ConditionsChange_Ctrl">
+
+  <aura:registerEvent name="save_conditions_evt" type="cuco:save_conditions_evt"/>
+  <aura:handler event="force:refreshView" action="{!c.doInit}" />
+
+  <aura:attribute name="conditionAttValuesJSON" type="String" />
+  <aura:attribute name="conditions" type="Object" />
+  <aura:attribute name="remainingfamilyItems" type="List" />
+  <aura:attribute name="waiting" type="Boolean" default="false"/>
+  <aura:attribute name="showWarning" type="Boolean" default="false"/>
+  <aura:attribute name="recordId" type="String" />
+  <aura:attribute name="cellwidth" type="String" default="width:33%"/>
+
+  <aura:attribute name="showCurrent" type="Boolean" default="true" />
+  <aura:attribute name="showStandard" type="Boolean" default="false" />
+  <aura:attribute name="showDelegated" type="Boolean" default="false" />
+
+  <aura:attribute name="showInformativeWarning" type="Boolean" default="false"/>
+
+  <aura:method name="save" action="{!c.save}" />
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <div class="slds-p-around_small slds-is-relative" id="modal-content-id-1">
+
+    <aura:if isTrue="{!v.waiting}">
+      <lightning:spinner variant="brand" alternativeText="Loading..." />
+    </aura:if >
+
+    <aura:if isTrue="{!v.showWarning}">
+      <div class="slds-notify slds-notify_alert slds-alert_warning lds-m-top_small" style="padding-right:50px;" role="alert">
+        <h2><lightning:icon iconName="utility:warning" size="x-small" class="slds-m-right_x-small" />{!$Label.cuco.select_cond_warning}</h2>
+        <div class="slds-notify__close">
+          <lightning:buttonIcon iconName="utility:close" onclick="{!c.dismissWarning}" variant="bare" title="{!$Label.cuco.close}" alternativeText="{!$Label.cuco.close}"/>
+        </div>
+      </div>
+    </aura:if>
+
+    <div aura:id="conditionsForm" class="slds-text-heading_small gray_panel slds-p-around_small">{!v.conditions.name}</div>
+
+    <aura:if isTrue="{!v.conditions.hasFamilyLevel}">
+
+      <!-- family wide conditions -->
+      <lightning:layout horizontalAlign="center" class="slds-p-left_xx-small slds-p-top_x-small slds-p-bottom_none">
+
+        <aura:iteration items="{!v.conditions.conditions}" var="condition" indexVar="famindex">
+          <aura:if isTrue="{!condition.familyLevel == true}">
+            <aura:iteration items="{!condition.attributes}" var="attribute" indexVar="attrindex">
+
+              <lightning:layoutItem size="3" class="slds-p-right_medium">
+                <label class="family-element" for="familyField">{!condition.name}</label>
+
+                <aura:if isTrue="{!attribute.type == 'Currency'}">
+                  <lightning:input type="number" aura:id="familyField" formatter="currency" class="family-element input_right_aligned" label="{!attribute.conditionAttributeId}" variant="label-hidden" name="{!condition.conditionId}" value="{!attribute.requestedValue}" step="0.01" />
+                </aura:if>
+
+                <aura:if isTrue="{!attribute.type == 'Number'}">
+                  <lightning:input type="number" aura:id="familyField" formatter="number" class="family-element input_right_aligned" label="{!attribute.conditionAttributeId}" variant="label-hidden" name="{!condition.conditionId}" value="{!attribute.requestedValue}" step="1" />
+                </aura:if>
+
+                <aura:if isTrue="{!attribute.type == 'Percent'}">
+                  <lightning:input type="number" aura:id="familyField" formatter="percent-fixed" class="family-element input_right_aligned" label="{!attribute.conditionAttributeId}" variant="label-hidden" name="{!condition.conditionId}" value="{!attribute.requestedValue}" step="0.01" />
+                </aura:if>
+
+                <aura:if isTrue="{!attribute.type == 'Permillage'}">
+                  <lightning:input type="number" aura:id="familyField" formatter="number" class="family-element input_right_aligned" label="{!attribute.conditionAttributeId}" variant="label-hidden" name="{!condition.conditionId}" value="{!attribute.requestedValue}" step="0.01" />
+                </aura:if>
+
+                <aura:if isTrue="{!attribute.type == 'List'}">
+                  <lightning:combobox aura:id="familyField" class="family-element" label="{!attribute.conditionAttributeId}" variant="label-hidden" value="{!attribute.requestedValue}" name="{!condition.conditionId}" options="{!attribute.options}" />
+                </aura:if>
+
+                <aura:if isTrue="{!attribute.type == 'Checkbox'}">
+                  <lightning:input type="toggle" aura:id="familyField" class="family-element" name="{!condition.conditionId}" label="{!attribute.conditionAttributeId}" variant="label-hidden" checked="{!attribute.requestedValue == 'true' ? true : false}" messageToggleActive="{!$Label.cuco.Yes}" messageToggleInactive="{!$Label.cuco.No}" />
+                </aura:if>
+
+              </lightning:layoutItem>
+
+            </aura:iteration>
+          </aura:if>
+        </aura:iteration>
+
+        <aura:iteration items="{!v.remainingfamilyItems}" var="blank" indexVar="remainingindex">
+          <lightning:layoutItem size="3" class="slds-p-right_medium"> </lightning:layoutItem>
+        </aura:iteration>
+
+      </lightning:layout>
+    </aura:if>
+
+    <!-- conditions  -->
+    <aura:if isTrue="{!v.conditions.hasConditionLevel}">
+      <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-border_bottom" style="width:100%;margin-top:20px;">
+
+        <thead >
+            <tr class="slds-line-height_reset slds-border_bottom">
+              <th class="slds-text-align_left slds-cell-wrap table_title" style="{!v.cellwidth + ';font-size:0.80em;'}" scope="col">
+                <div title="">{!$Label.cuco.header_condition}</div>
+              </th>
+              <aura:if isTrue="{!v.showStandard}">
+                <th class="slds-text-align_right slds-cell-wrap table_title" style="{!v.cellwidth + ';font-size:0.80em;'}" scope="col">
+                  <div title="">{!$Label.cuco.header_standard}</div>
+                </th>
+              </aura:if>
+              <aura:if isTrue="{!v.showDelegated}">
+                <th class="slds-text-align_right slds-cell-wrap table_title" style="{!v.cellwidth + ';font-size:0.80em;'}" scope="col">
+                  <div title="">{!$Label.cuco.header_delegated}</div>
+                </th>
+              </aura:if>
+              <aura:if isTrue="{!v.showCurrent}">
+                <th class="slds-text-align_right slds-cell-wrap table_title" style="{!v.cellwidth + ';font-size:0.80em;'}" scope="col">
+                  <div title="">{!$Label.cuco.header_current}</div>
+                </th>
+              </aura:if>
+              <th class="slds-text-align_right slds-cell-wrap table_title" style="{!v.cellwidth + ';font-size:0.80em;'}" scope="col">
+                <div title="">{!$Label.cuco.header_requested}</div>
+              </th>
+            </tr>
+        </thead>
+
+        <aura:iteration items="{!v.conditions.conditions}" var="condition" indexVar="condindex">
+          <aura:if isTrue="{!condition.familyLevel == false}">
+            <tbody>
+              <tr>
+                <td scope="row" colspan="5" class="slds-p-left_none slds-border_bottom">
+                  <div classs="slds-cell-wrap slds-text-align_left slds-p-top_medium slds-p-left_xxx-small slds-p-bottom_xxx-small" data-id="{!condindex}" id="{!condition.conditionId}" onclick="{!c.toggleCondition}" style="cursor:pointer;margin-top:10px;">
+                    <b><lightning:icon iconName="{!condition.expanded?'utility:chevrondown':'utility:chevronright'}" alternativeText=">"  size="xx-small" class="slds-p-right_x-small" />{!condition.name}</b>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tbody class="{!condition.expanded?'show slds-border_bottom':'hide slds-border_bottom'}">
+              <aura:iteration items="{!condition.attributes}" var="attribute" indexVar="attrindex">
+                <tr>
+                  <td scope="row" role="gridcell" style="{!v.cellwidth}" class="slds-cell-wrap slds-text-align_left" data-label="{!attribute.label}">
+                    {!attribute.label}
+                  </td>
+                  <aura:iteration items="{!attribute.values}" var="attrValue" indexVar="valueindex">
+                    <aura:if isTrue="{!attrValue.name == 'requested' || and(attrValue.name == 'official', v.showStandard == true) || and(attrValue.name == 'delegated', v.showDelegated == true) || and(attrValue.name == 'current', v.showCurrent == true)}" >
+
+                      <td scope="row" style="{!v.cellwidth}" role="gridcell" class="slds-cell-wrap slds-text-align_right">
+
+                        <aura:if isTrue="{!attribute.type == 'Currency'}">
+                          <lightning:formattedNumber value="{!attrValue.value}" style="currency" currencyCode="EUR" />
+                        </aura:if>
+
+                        <aura:if isTrue="{!attribute.type == 'Number'}">
+                          <lightning:formattedNumber value="{!attrValue.value}" maximumFractionDigits="0" />
+                        </aura:if>
+
+                        <aura:if isTrue="{!attribute.type == 'Percent'}">
+                          <lightning:formattedNumber value="{!attrValue.value}" style="percent-fixed" minimumFractionDigits="2" maximumFractionDigits="2" />
+                        </aura:if>
+
+                        <aura:if isTrue="{!attribute.type == 'Permillage'}">
+                          <aura:if isTrue="{!attrValue.value != ''}">
+                            <lightning:formattedNumber value="{!attrValue.value}"  minimumFractionDigits="2"  maximumFractionDigits="2" />&nbsp;&#8240;
+                          </aura:if>
+                        </aura:if>
+
+                        <aura:if isTrue="{!attribute.type == 'List'}">
+                          <div title="{!attrValue.value}">{!attrValue.value}</div>
+                        </aura:if>
+
+                        <aura:if isTrue="{!attribute.type == 'Checkbox'}">
+                          <aura:if isTrue="{!attrValue.value}">
+                            <div title="{!$Label.cuco.Yes}">{!$Label.cuco.Yes}</div>
+                          <aura:set attribute="else">
+                            <div title="{!$Label.cuco.No}">{!$Label.cuco.No}</div>
+                          </aura:set>
+                          </aura:if>
+                        </aura:if>
+                      </td>
+                    </aura:if>
+                  </aura:iteration>
+
+                  <td scope="row" style="{!v.cellwidth}" role="gridcell" class="slds-cell-wrap slds-text-align_right" data-label="Label">
+
+                    <aura:if isTrue="{!attribute.type == 'Currency'}">
+                      <lightning:input type="number" aura:id="inputField" formatter="currency" class="slds-form_inline input_right_aligned" label="{!attribute.conditionAttributeId}" variant="label-hidden" name="{!condition.conditionId}" value="{!attribute.requestedValue}" step="0.01" />
+                    </aura:if>
+
+                    <aura:if isTrue="{!attribute.type == 'Number'}">
+                      <lightning:input type="number" aura:id="inputField" formatter="number" class="slds-form_inline input_right_aligned" label="{!attribute.conditionAttributeId}" variant="label-hidden" name="{!condition.conditionId}" value="{!attribute.requestedValue}" step="1" />
+                    </aura:if>
+
+                    <aura:if isTrue="{!attribute.type == 'Percent'}">
+                      <lightning:input type="number" aura:id="inputField" formatter="percent-fixed" class="slds-form_inline input_right_aligned" label="{!attribute.conditionAttributeId}" variant="label-hidden" name="{!condition.conditionId}" value="{!attribute.requestedValue}" step="0.01" />
+                    </aura:if>
+
+                    <aura:if isTrue="{!attribute.type == 'Permillage'}">
+                      <lightning:input type="number" aura:id="inputField" formatter="number" class="slds-form_inline input_right_aligned" label="{!attribute.conditionAttributeId}" variant="label-hidden" name="{!condition.conditionId}" value="{!attribute.requestedValue}" step="0.01" />
+                    </aura:if>
+
+                    <aura:if isTrue="{!attribute.type == 'List'}">
+                      <lightning:combobox aura:id="inputField" class="slds-form_inline" variant="label-hidden" label="{!attribute.conditionAttributeId}" value="{!attribute.requestedValue}" name="{!condition.conditionId}" options="{!attribute.options}" />
+                    </aura:if>
+
+                    <aura:if isTrue="{!attribute.type == 'Checkbox'}">
+                      <lightning:combobox aura:id="inputField" class="slds-form_inline" variant="label-hidden" label="{!attribute.conditionAttributeId}" value="{!attribute.requestedValue == 'true' ? 'true' : 'false'}" name="{!condition.conditionId}" options="{!attribute.options}" />
+                    </aura:if>
+
+                  </td>
+                </tr>
+              </aura:iteration>
+            </tbody>
+          </aura:if>
+        </aura:iteration>
+      </table>
+    </aura:if>
+    <aura:if isTrue="{!v.showInformativeWarning}">
+      <lightning:icon iconName="utility:info" size="xx-small" class="slds-m-horizontal_small"/>
+      <div class="slds-form-element__label slds-m-top_medium">{!$Label.cuco.informative_conditions_warning}</div>
+    </aura:if>
+    <div class="slds-p-around_x-small" id="clear"></div>
+  </div>
+</aura:component>

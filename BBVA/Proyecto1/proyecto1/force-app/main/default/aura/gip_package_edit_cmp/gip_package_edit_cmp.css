@@ -1,0 +1,8 @@
+.THIS .bgColorGrey {
+  background-color: #f3f2f2;
+}
+
+.THIS .slds-form-element__legend {
+  font-size: 13px;
+  padding-top: 0 !important;
+}

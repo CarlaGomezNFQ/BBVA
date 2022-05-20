@@ -1,0 +1,38 @@
+<aura:component controller = "arce.Arc_Gen_AnalysisSummary_Controller" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="carousel" type="Aura.Component[]"/>
+    <aura:attribute name="dynamicForm" type="Aura.Component[]"/>
+    <aura:attribute name="childId" type="String"/>
+    <aura:attribute name="modelSelctd" type="String"/>
+    <aura:attribute name="childFields" type="Object"/>
+    <aura:attribute name="childRecordError" type="String"/>
+    <aura:attribute name="templateTypePrefix" type="String" default="SP2-IRP-" />
+    <aura:attribute name="jsonInput" type="String" />
+    <aura:attribute name="uniqueName" type="String"/>
+    <aura:attribute name="isValidated" type="Boolean" default="false" access="global"/>
+    <aura:attribute name="nameCards" type="String" />
+    <aura:handler event="qvcd:GBL_SelectItem_EVT" action="{!c.getItemEvent}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:handler event="arce:Arc_Gen_RRTM_Wrapper_evt" action="{!c.saveAllComplete}"/>
+    <aura:handler event="dyfr:SaveObject_evt" action="{!c.handleSaveEvent}"/>
+    <aura:registerEvent name="cmpEvent" type="dyfr:SaveObject_evt"/>
+    <aura:registerEvent name="chartRefresh" type="chgn:chartRefreshEvent"/>
+    <force:recordData aura:id="recordLoader"
+      recordId="{!v.childId}"
+      fields="Id, arce__Template_type__c"
+      targetFields="{!v.childFields}"
+      targetError="{!v.childRecordError}"
+      recordUpdated="{!c.handleRecordChanged}"/>
+      <div>
+        {!v.carousel}
+      </div>
+      <aura:renderIf isTrue="{!v.isValidated}">
+      <cmpw:GBL_ComponentWrapper_CMP
+        uniqueName = "{!v.uniqueName}"
+        jsonInput = "{!v.jsonInput}"
+        recordId = "{!v.recordId}"/>
+      </aura:renderIf>
+      <div>
+        {!v.dynamicForm}
+      </div>
+</aura:component>

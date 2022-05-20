@@ -1,0 +1,93 @@
+.THIS .bgColorGrey {
+  background-color: #f3f2f2;
+}
+
+.THIS .actionChoice {
+  margin: 0 -5px;
+}
+
+.THIS .actionChoice > * {
+  display: inline-block;
+  padding: 5px;
+}
+
+.THIS .actionChoice label {
+  display: block;
+  text-align: center;
+  border: 2px solid;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 4px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.THIS .actionChoice label svg {
+  margin: none auto;
+  display: block;
+  width: 100%;
+}
+
+.THIS .actionChoice label.Science_blue {
+  color: #0070d2;
+  background: #fafdfc;
+}
+
+.THIS .actionChoice label.Science_blue:hover {
+  background: #f7fbff;
+}
+
+.THIS .actionChoice label.Science_blue .slds-icon-text-default {
+  fill: #0070d2;
+}
+
+.THIS .actionChoice input[type="checkbox"]:checked + label.Science_blue {
+  color: #fff;
+  border-color: #0070d2;
+  background: #0070d2;
+}
+
+.THIS .actionChoice input[type="checkbox"]:checked + label.Science_blue .slds-icon-text-default {
+  fill: #fff;
+}
+
+.THIS .actionChoice div.Science_blue .slds-icon-text-default {
+  fill: #0070d2;
+}
+
+.THIS .actionChoice label.Science_blue {
+  color: #0070d2;
+  background: #fafdfc;
+}
+
+.THIS .actionChoice label.Science_blue:hover {
+  background: #f7fbff;
+}
+
+.THIS .actionChoice label.Science_blue .slds-icon-text-default {
+  fill: #0070d2;
+}
+
+.THIS .actionChoice output[type="checkbox"]:checked + label.Science_blue {
+  color: #fff;
+  border-color: #0070d2;
+  background: #0070d2;
+}
+
+.THIS .actionChoice output[type="checkbox"]:checked + label.Science_blue .slds-icon-text-default {
+  fill: #fff;
+}
+
+.THIS .actionChoice label:hover {
+  background: lightgray;
+}
+
+.THIS .actionChoice input[type="checkbox"]:checked + label {
+  background: black;
+  color: white;
+}
+
+.THIS .actionChoice input {
+  display: none !important;
+}

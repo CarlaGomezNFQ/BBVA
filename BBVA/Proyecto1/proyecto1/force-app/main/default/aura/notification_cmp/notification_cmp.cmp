@@ -1,0 +1,80 @@
+<aura:component implements="dwp_dbpn:DynamicFlowWizardStep_itf" extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="cuco.Notification_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!-- Modal attributes -->
+    <aura:attribute name="hide" type="Boolean"  default="false" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="closeButton" type="Boolean"  default="true" />
+    <aura:attribute name="hasHeader" type="Boolean"  default="true" />
+    <aura:attribute name="modalSizeSLDS" type="String" default="slds-modal_small" />
+
+    <!-- Component attributes -->
+    <aura:attribute name="isSuccess" type="Boolean" default="false" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="saveButtonDisabled" type="Boolean" default="true" />
+    <aura:attribute name="commentsNotificationHiddenValue" type="String" />
+
+    <aura:set attribute="title" value="{!$Label.cuco.notification_title}" />
+
+    <div aura:id="loadSpinner">
+        <lightning:spinner aura:id="simpleSpinner" alternativeText="loading..." class="backOff slds-hide" variant="brand" size="large" />
+    </div>
+    <aura:if isTrue="{!v.isSuccess}">
+        <div class="slds-modal__content slds-p-around_xx-large">
+            <div class="slds-grid slds-grid_vertical">
+                <!-- Description -->
+                <div class="slds-col">
+                    <div class="slds-text-heading_small">
+                        {!$Label.cuco.notification_info}
+                    </div>
+                </div>
+                <!-- Comments -->
+                <div class="slds-col slds-p-top_medium">
+                    <lightning:textarea aura:id="commentsNotification" label="{!$Label.cuco.notification_comments}" required="true" maxlength="1000" onchange="{!c.handleNotificationCommentsChange}"/>
+                </div>
+                <!-- Warning message -->
+                <div class="slds-col slds-p-top_medium">
+                    <div class="slds-text-heading_small redColor">
+                        <lightning:icon variant="error" iconName="utility:warning" size="medium" alternativeText="Warning!"/> &nbsp;
+                        <lightning:formattedText value="{!$Label.cuco.notification_warning}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="{!$Label.cuco.cancel}" onclick="{!c.handleNotificationCancel}" class="slds-float_left"/>
+            <lightning:button variant="brand" label="{!$Label.cuco.notification_send}" onclick="{!c.handleNotificationSave}" disabled="{!v.saveButtonDisabled}"/>
+        </footer>
+    </aura:if>
+
+    <!-- Audit Details-->
+    <div class="slds-hide">
+        <aura:if isTrue="{!v.isSuccess}">
+            <div id="auditBody">
+                <div class="slds-modal__content slds-p-around_xx-large" style="overflow: auto">
+                    <div class="slds-grid slds-grid_vertical">
+                        <div class="slds-col">
+                            <div class="slds-text-heading_small">
+                                {!$Label.cuco.notification_info}
+                            </div>
+                        </div>
+                        <div class="slds-col slds-p-top_medium">
+                            <div class="slds-form-element__label">
+                                {!$Label.cuco.notification_comments}
+                            </div>
+                            <div class="slds-form-element__control" style="color:#433e3c;">
+                                {!v.commentsNotificationHiddenValue}
+                            </div>
+                        </div>
+                        <div class="slds-col slds-p-top_medium">
+                            <div class="slds-text-heading_small" style="color:#d2272b;">
+                                {!$Label.cuco.notification_warning}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+</aura:component>

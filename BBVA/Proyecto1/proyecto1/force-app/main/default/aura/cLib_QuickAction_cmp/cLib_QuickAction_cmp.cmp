@@ -1,0 +1,19 @@
+<aura:component implements="force:lightningQuickAction,flexipage:availableForAllPageTypes,force:hasRecordId"
+extensible="true" abstract="true" access="global" controller="bbvacep.Clib_QuickAction_ctrl">
+  <aura:attribute name="quickActionName" type="String" description="DeveloperName of the clib_QuickActions__mdt record"/>
+  <aura:attribute name="showToast" type="Boolean" default="false" description="Indicates whether a toast will be shown when the quick action is finished"/>
+  <aura:attribute name="quickActionMdt" type="clib_QuickActions__mdt" description="clib_QuickActions__mdt record setted in 'quickActionName' attribute"/>
+  <aura:attribute name="showSpinner" type="Boolean" default="true" description="Indicates whether a spinner will be shown or not"/>
+  <aura:attribute name="closeOnComplete" type="Boolean" default="true" description="If true, the quick action dialog will be closed when the quick action is finished"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+  <aura:if isTrue="{!v.showSpinner}">
+    <div aura:id="spinner" class="slds-grid_align-center">
+      <div role="status" class="slds-spinner slds-spinner_small">
+        <span class="slds-assistive-text">Loading</span>
+        <div class="slds-spinner__dot-a"></div>
+        <div class="slds-spinner__dot-b"></div>
+      </div>
+    </div>
+  </aura:if>
+  {!v.body}
+</aura:component>

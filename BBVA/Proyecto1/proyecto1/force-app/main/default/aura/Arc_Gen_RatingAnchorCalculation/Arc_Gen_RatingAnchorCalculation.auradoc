@@ -1,0 +1,4 @@
+<aura:documentation>
+  <aura:description>Component that handles rating anchor calculation</aura:description>
+  <aura:example name="Arc_Gen_RatingAnchorCalculation" ref="c:Arc_Gen_RatingAnchorCalculation" label="Calculate Rating Anchor">Component that handles anchor</aura:example>
+</aura:documentation>

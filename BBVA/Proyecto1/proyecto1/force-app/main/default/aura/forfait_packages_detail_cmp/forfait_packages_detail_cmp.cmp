@@ -1,0 +1,126 @@
+<aura:component access="global" controller="cuco.ForfaitPackagesDetail_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:attribute name="forfaitPkg" type="Object"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="sObjectName" type="String"/>
+    <aura:attribute name="canEditForfaitPkg" type="Boolean" default="false"/>
+    <aura:attribute name="canCancelForfaitPkg" type="Boolean" default="false"/>
+    <aura:attribute name="canUndoCancelForfaitPkg" type="Boolean" default="false"/>
+    <aura:attribute name="pkgPermissions" type="Object" />
+
+    <div class="slds-grid slds-wrap">
+        <!-- Detail header -->
+        <div class="slds-col slds-size_3-of-12 slds-p-vertical_x-small slds-text-title_bold">
+            <lightning:buttonIcon class="slds-p-horizontal_x-small" iconName="utility:chevrondown" variant="bare" aura:id="forfaitPkgIconCollapsible" onclick="{!c.handleForfaitClickCollapsibleIcon}"/>
+            <lightning:formattedText value="{!v.forfaitPkg.code}" />
+        </div>
+        <div class="slds-col slds-size_4-of-12 slds-p-vertical_x-small slds-text-title_bold slds-truncate">
+            <lightning:formattedText value="{!v.forfaitPkg.description}" />
+        </div>
+        <div class="slds-col slds-size_3-of-12 slds-p-vertical_x-small">
+            <lightning:formattedText    class="{!or(v.forfaitPkg.status.id == 'Cancelled', v.forfaitPkg.requestStatus.id == 'Cancellation') ? 'slds-text-title_bold redIcon' : 'slds-text-title_bold'}"
+                                        value="{!and(v.forfaitPkg.requestStatus != null, v.forfaitPkg.status.value != null)
+                                                ? v.forfaitPkg.status.value + ' - ' + v.forfaitPkg.requestStatus.value
+                                                : (v.forfaitPkg.requestStatus == null ? v.forfaitPkg.status.value : v.forfaitPkg.requestStatus.value)}" />
+        </div>
+        <div class="slds-col slds-size_2-of-12 slds-p-vertical_x-small slds-text-title_bold">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_8-of-12">
+                    <lightning:formattedDateTime value="{!v.forfaitPkg.endDate}" year="numeric" month="2-digit" day="2-digit"/>
+                </div>
+                <div class="slds-col slds-size_2-of-12">
+                    <div class="slds-align_absolute-center">
+                        <aura:if isTrue="{!v.canEditForfaitPkg}">
+                            <lightning:buttonIcon iconName="utility:edit" variant="bare" onclick="{!c.handleEditClick}" alternativeText="{!$Label.cuco.alternative_text_edit}" class="blueIcon" tooltip="{!$Label.cuco.pkg_edit_tooltip}"/>
+                        </aura:if>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_2-of-12">
+                    <div class="slds-align_absolute-center">
+                        <aura:if isTrue="{!v.canCancelForfaitPkg}">
+                            <lightning:buttonIcon iconName="utility:delete" variant="bare" onclick="{!c.handleCancelClick}" alternativeText="{!$Label.cuco.alternative_text_delete}" class="blueIcon" tooltip="{!$Label.cuco.pkg_cancel_tooltip}"/>
+                        </aura:if>
+                        <aura:if isTrue="{!v.canUndoCancelForfaitPkg}">
+                            <lightning:buttonIcon iconName="utility:undo" variant="bare" onclick="{!c.handleCancelClick}" alternativeText="{!$Label.cuco.alternative_text_undo}" class="blueIcon" tooltip="{!$Label.cuco.pkg_undo_cancellation_button}"/>
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail body-->
+        <div class="slds-col" aura:id="forfaitPkgDetails">
+            <div class="slds-grid slds-grid_vertical">
+                <aura:if isTrue="{!v.forfaitPkg.isExtended}">
+                    <div class="slds-col slds-p-left_x-large">
+                        <lightning:button iconName="utility:record" variant="bare" class="{!v.forfaitPkg.status.id == 'Cancelled' ? 'redIcon' : 'blueIcon'}"/>
+                        <span class="slds-text-title_bold">{!$Label.cuco.forfait_pkg_extended}</span>
+                    </div>
+                </aura:if>
+                <div class="slds-col">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size_1-of-3 slds-p-left_x-large">
+                            <div class="slds-form-element__label">
+                                {!$Label.cuco.forfait_pkg_participant}
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <div class="slds-form-element__label">
+                                {!$Label.cuco.forfait_pkg_chargeAmount}
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <div class="slds-form-element__label">
+                                {!$Label.cuco.forfait_pkg_periodicity}
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3 slds-p-left_x-large slds-p-bottom_medium">
+                            <lightning:formattedText value="{!v.forfaitPkg.participant.name}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3 slds-p-bottom_medium">
+                            <lightning:formattedNumber value="{!v.forfaitPkg.chargeAmount}" maximumFractionDigits="2"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3 slds-p-bottom_medium">
+                            <lightning:formattedText value="{!v.forfaitPkg.chargePeriodicity.value}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3 slds-p-left_x-large">
+                            <div class="slds-form-element__label">
+                                {!$Label.cuco.forfait_pkg_clientRepName}
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <aura:if isTrue="{!v.forfaitPkg.requestStatus.id == 'New'}">
+                                <div class="slds-form-element__label">
+                                    {!$Label.cuco.forfait_pkg_bankRepName}
+                                </div>
+                            </aura:if>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <aura:if isTrue="{!v.forfaitPkg.requestStatus.id == 'New'}">
+                                <div class="slds-form-element__label">
+                                    {!$Label.cuco.forfait_pkg_chargeAccount}
+                                </div>
+                            </aura:if>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3 slds-p-left_x-large slds-p-bottom_medium">
+                            <lightning:formattedText value="{!v.forfaitPkg.clientRepName}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3 slds-p-bottom_medium">
+                            <aura:if isTrue="{!v.forfaitPkg.requestStatus.id == 'New'}">
+                                <lightning:formattedText value="{!v.forfaitPkg.bankRepName}"/>
+                            </aura:if>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3 slds-p-bottom_medium">
+                            <aura:if isTrue="{!v.forfaitPkg.requestStatus.id == 'New'}">
+                                <lightning:formattedText value="{!v.forfaitPkg.chargeAccount}"/>
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {!v.body}
+</aura:component>

@@ -1,0 +1,55 @@
+<aura:component implements="lightning:recordHomeTemplate" description="Full-width header above a main column and collapsible right rightSidebar.">
+    
+    <aura:attribute name="header" type="Aura.Component[]" description="Header region"/>
+    <aura:attribute name="leftsidebar" type="Aura.Component[]" description="Left Sidebar region"/>
+    <aura:attribute name="main" type="Aura.Component[]" description="Main region"/>
+    <aura:attribute name="rightSidebar" type="Aura.Component[]" description="Collapsible rightSidebar region"/>
+
+<aura:attribute name="isRightSidebarCollapsed" type="Boolean" access="PRIVATE" default="false" />
+<aura:attribute name="isLeftSidebarCollapsed" type="Boolean" access="PRIVATE" default="false" />
+<aura:attribute name="sizeMainRegion" type="Integer" access="PRIVATE" default="6" />
+    
+<aura:handler event="aura:doneRendering" action="{!c.doneRendering}"/>
+
+    <div>
+      <!--Bloque 1: solo colapsable, hace scroll. reemplazable por el 2  para hacer sticky el highlights panel-->
+        <div>{!v.header}</div>
+      <!--Fin Bloque 1-->
+      <!--Bloque 2: reemplaza al  Bloque 1  para hacer sticky el highlights panel-->
+      <!--<div id="stickySection">
+            <lightning:layout aura:id="stickySection">
+                <lightning:layoutItem size="12"> 
+                    {!v.header}
+                </lightning:layoutItem>
+            </lightning:layout>
+        </div>
+        -->
+        <!--Fin Bloque sticjy section-->
+        <lightning:layout class="slds-m-top_medium">
+        <lightning:layoutItem class="{! v.isLeftSidebarCollapsed ? ' slds-hide' : '' }" size="3">
+                {!v.leftsidebar}
+            </lightning:layoutItem>
+            <lightning:layoutItem flexibility="no-flex">
+                <lightning:buttonIcon onclick ="{!c.toggleLeftSection}"
+                                      class="design-allow-interaction toggle slds-p-around_xxx-small slds-m-horizontal_xx-small custom-left-button"
+                                      variant="border-filled"
+                                      iconName="{! v.isLeftSidebarCollapsed ? 'utility:chevronright' : 'utility:chevronleft' }"
+                                      alternativeText="{! v.isLeftSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar' }" />
+            </lightning:layoutItem>
+      
+            <lightning:layoutItem flexibility="auto" size="{!v.sizeMainRegion}">
+                {!v.main}
+            </lightning:layoutItem>
+            <lightning:layoutItem flexibility="no-flex">
+                <lightning:buttonIcon onclick ="{!c.toggleRightSection}"
+                                      class="design-allow-interaction toggle slds-p-around_xxx-small slds-m-horizontal_xx-small"
+                                      variant="border-filled"
+                                      iconName="{! v.isRightSidebarCollapsed ? 'utility:chevronleft' : 'utility:chevronright' }" 
+                                      alternativeText="{! v.isRightSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar' }" />
+            </lightning:layoutItem>
+            <lightning:layoutItem class="{! v.isRightSidebarCollapsed ? ' slds-hide' : '' }" size="2">
+                {!v.rightSidebar}
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div>
+</aura:component>

@@ -1,0 +1,11 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"  controller="arce.Arc_Gen_initOverlay_Controller" access="global" >
+    <aura:attribute name="setMeOnInit" type="String" default="default value" />
+    <aura:attribute name="cclients" type="String" access="global" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <lightning:buttonGroup>
+        <cmpw:GBL_ComponentWrapper_CMP recordId='{!v.recordId}' uniqueName='OverlayRatingAndPersistence' buttonsMode ='Show' jsonInput='{"orientation":"vertical","components": [{"name": "arce:Arc_Gen_RatingOverlayCalculation","inModalFromButton": {"labelButton": "Call Overlay Rating","variantButton": "brand","iconButton": "utility:omni_channel","iconPosition":"left","positionButton": "left","editMode":true,"headerModal": "Rating Overlay","closeButtonModal": true,"closeModalActionEvt":{"name":"cmpw:GBL_ComponentWrapperRefresh_Evt","attributes": {"uniqueNameEvt":"RatingEngineEvt"}}},"attributes":{}}]}'/>
+        <aura:if isTrue="{!v.cclients}">
+            <cmpw:GBL_ComponentWrapper_CMP recordId='{!v.recordId}' uniqueName='UpdateGCPRatings' buttonsMode ='Show' jsonInput='{"orientation":"vertical","components": [{"name": "arce:Arc_Gen_RecalculateRatings","inModalFromButton": {"labelButton": "Update GCP Rating","variantButton": "destructive","iconButton": "utility:download","iconPosition":"left","positionButton": "left","editMode":true,"headerModal": "Update GCP Rating","closeButtonModal": true,"closeModalActionEvt":{"name":"cmpw:GBL_ComponentWrapperRefresh_Evt","attributes": {"uniqueNameEvt":"RatingEngineEvt"}}},"attributes":{}}]}'/>
+        </aura:if>
+    </lightning:buttonGroup>
+</aura:component>

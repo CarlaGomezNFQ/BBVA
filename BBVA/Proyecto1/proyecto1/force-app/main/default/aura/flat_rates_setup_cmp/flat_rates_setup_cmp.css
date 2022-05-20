@@ -1,0 +1,41 @@
+.THIS .radioInLine .slds-form-element__control .slds-radio {
+  display: inline-block !important;
+}
+
+.THIS .slds-form-element__legend {
+  font-size: 13px;
+  padding-top: 0 !important;
+}
+
+.THIS .legendWithoutBold .slds-form-element__legend {
+  font-weight: 400 !important;
+  font-size: 0.75rem !important;
+}
+
+.THIS .textAlignRight {
+  text-align: right;
+}
+
+.THIS .noPaddingLeft {
+  padding-left: 0 !important;
+}
+
+.THIS .noPaddingRight {
+  padding-right: 0 !important;
+}
+
+.THIS td {
+  vertical-align: middle;
+}
+
+.THIS .inputPaddingLeft .slds-form-element__control {
+  padding-left: 1rem;
+}
+
+.THIS .label-hidden > label {
+  display: none;
+}
+
+.THIS .blueIcon {
+  color: #6495ed;
+}

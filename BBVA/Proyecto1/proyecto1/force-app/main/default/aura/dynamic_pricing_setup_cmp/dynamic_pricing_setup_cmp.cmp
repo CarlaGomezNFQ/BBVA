@@ -1,0 +1,116 @@
+<aura:component extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="cuco.Dynamic_Pricing_Setup_Ctrl">
+
+    <!-- Modal attributes -->
+    <aura:attribute name="hide" type="Boolean" default="false" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="closeButton" type="Boolean" default="true" />
+    <aura:attribute name="hasHeader" type="Boolean" default="true" />
+    <aura:attribute name="modalSizeSLDS" type="String" default="slds-modal_small" />
+
+    <!-- Component attributes and event -->
+    <aura:attribute name="profAnalysisFlatRateId" type="String" access="global"/>
+    <aura:attribute name="flatWrap" type="Object" />
+    <aura:attribute name="newHeaderList" type="Object" />
+
+    <aura:attribute name="dpList" type="List" />
+    <aura:attribute name="boxes" type="List" />
+    <aura:attribute name="table" type="List" />
+    <aura:attribute name="showSection" type="Boolean" default="false" />
+
+    <!-- New Attributes -->
+    <aura:attribute name="mapToHandle" type="Object" />
+    <aura:attribute name="mapNonCross" type="List" />
+    <aura:attribute name="lstCross" type="List" />
+    <aura:attribute name="dpAttCross" type="List" />
+    <aura:attribute name="dpAttNonCross" type="List" />
+    <aura:attribute name="flatRate" type="cuco__profitability_analysis_flat_rates__c" />
+
+    <aura:registerEvent name="refresh_flat_rates_evt" type="cuco:refresh_flat_rates_evt" />
+    <aura:registerEvent name="refresh_conditions_evt" type="cuco:refresh_conditions_evt"/>
+
+    <!-- Handler and title -->
+    <aura:set attribute="title" value="{!$Label.cuco.select_flat_cond_title}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div aura:id="loadSpinner">
+        <lightning:spinner aura:id="simpleSpinner" alternativeText="loading..." class="backOff" variant="brand" size="large" />
+    </div>
+    <div class="slds-modal__content slds-p-around_medium slds-modal_large">
+        <div class="slds-text-heading_small slds-p-around_medium slds-text-title_bold">{!$Label.cuco.dp_section_title}</div>
+        <div aura:id="container" class="slds-scrollable">
+            <div class="slds-grid slds-wrap slds-p-around_small">
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="slds-grid slds-wrap">
+                        <aura:iteration items="{!v.lstCross}" var="crossItem">
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                <aura:if isTrue="{!crossItem.valueType == 'Number' || crossItem.valueType == 'Currency' || crossItem.valueType == 'Percent'}">
+                                    <lightning:input aura:id="inputsCross" name="{!crossItem.flatId + '#' + crossItem.idDynamicPricing + '#' + crossItem.id + '#' + crossItem.name}" type="number" formatter="decimal" maxlenght="{!crossItem.maxLength}" step="{!crossItem.step}" label="{!crossItem.name}" value="{!crossItem.value}"/>
+                                    <aura:set attribute="else">
+                                        <lightning:input aura:id="inputsCross" name="{!crossItem.flatId + '#' + crossItem.idDynamicPricing + '#' + crossItem.id + '#' + crossItem.name}" type="{!crossItem.valueType}" label="{!crossItem.name}" value="{!crossItem.value}"/>
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                        </aura:iteration>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-p-around_medium">
+                <table class="slds-table">
+                    <thead>
+                        <tr class="slds-border_bottom">
+                            <th>{!$Label.cuco.dp_name}</th>
+                            <aura:iteration items="{!v.dpAttNonCross}" var="nonCrossLabel">
+                                <th>{!nonCrossLabel.name}</th>
+                            </aura:iteration>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.mapNonCross}" var="nonCrossItem" indexVar="itemIndex">
+                            <tr class="bgColor slds-text-title_bold border_bottom slds-hint-parent slds-p-vertical_small">
+                                <td>
+                                    <lightning:buttonIcon variant="bare" value="{!itemIndex}" onclick="{!c.toggle}"
+                                        iconName="{!nonCrossItem.expanded ?'utility:chevrondown':'utility:chevronright'}"
+                                        class="noShadow slds-m-right_xxx-small" />
+                                    {!nonCrossItem.name}
+                                </td>
+                                <aura:iteration items="{!v.dpAttNonCross}" var="nonCrossLabel">
+                                    <td> </td>
+                                </aura:iteration>
+                            </tr>
+                            <aura:if isTrue="{!nonCrossItem.expanded}">
+                                <aura:iteration items="{!nonCrossItem.lstDynamicCond}" var="condition">
+                                    <tr>
+                                        <td>{!condition.name}</td>
+                                        <aura:iteration items="{!condition.lstDynamicAttb}" var="attb" indexVar="attbIndex">
+                                            <aura:if isTrue="{!attbIndex == attb.position}">
+                                                <td>
+                                                    <aura:if isTrue="{!attb.valueType == 'Number' || attb.valueType == 'Currency' || attb.valueType == 'Percent'}">
+                                                        <lightning:input aura:id="inputsNonCross" name="{!condition.idFlat + '#' + condition.idDynamicPricing + '#' + attb.id + '#' + condition.name}" type="number" formatter="decimal" maxlength="{!attb.maxLength}" step="{!attb.step}" variant="label-hidden" value="{!attb.value}"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:input aura:id="inputsNonCross" name="{!condition.idFlat + '#' + condition.idDynamicPricing + '#' + attb.id + '#' + condition.name}" type="{!attb.valueType}" variant="label-hidden" value="{!attb.value}"/>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+                                                <aura:set attribute="else">
+                                                    <td></td>
+                                                </aura:set>
+                                            </aura:if>
+                                        </aura:iteration>
+                                    </tr>
+                                </aura:iteration>
+                            </aura:if>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="slds-p-around_medium">
+            <lightning:icon class="slds-p-left_xx-small slds-p-bottom_xx-small slds-p-right_xx-small" size="xx-small" iconName="utility:info"/>
+            {!$Label.cuco.dp_help_text}
+        </div>
+    </div>
+    <footer class="slds-modal__footer">
+        <lightning:button variant="neutral" label="{!$Label.cuco.cancel}" onclick="{!c.handleCancel}" class="slds-float_left" />
+        <lightning:button variant="brand" label="{!$Label.cuco.save}" onclick="{!c.handleContinue}" />
+    </footer>
+</aura:component>

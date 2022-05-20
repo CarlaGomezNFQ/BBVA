@@ -1,0 +1,75 @@
+<aura:component implements="force:hasRecordId" extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="cuco.ConditionsAdd_Ctrl">
+
+  <aura:registerEvent name="refresh_conditions_evt" type="cuco:refresh_conditions_evt"/>
+
+  <aura:handler event="force:refreshView" action="{!c.doInit}" />
+  <aura:handler name="save_conditions_evt" event="cuco:save_conditions_evt" action="{!c.handleEventSave}" />
+
+  <aura:attribute name="conditionsSelected" type="Object" />
+  <aura:attribute name="recordId" type="String" />
+  <aura:attribute name="conditions" type="Object" />
+
+  <aura:attribute name="selectedFamilies" type="Object" />
+  <aura:attribute name="familyIds" type="String[]" />
+  <aura:attribute name="familyNames" type="String[]" />
+  <aura:attribute name="currentIndex" type="Integer" />
+  <aura:attribute name="numFamilies" type="Integer" />
+
+  <aura:attribute name="conditionAttValuesJSON" type="String" />
+
+  <aura:attribute name="loaded" type="Boolean"  default="false" />
+  <aura:attribute name="waiting" type="Boolean" default="false" />
+  <aura:attribute name="showWarning" type="Boolean" default="false" />
+  <aura:attribute name="errors" type="Object" />
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <aura:set attribute="title" value="{!$Label.cuco.add_conditions}" />
+  <aura:set attribute="modalSizeSLDS" value="slds-modal_small" />
+
+  <div class="slds-modal__content slds-p-around_none slds-is-relative" id="modal-content-id-1">
+
+    <aura:if isTrue="{!v.waiting}">
+      <lightning:spinner variant="brand" alternativeText="Loading..." />
+    </aura:if >
+
+    <aura:if isTrue="{!v.showWarning}">
+      <div class="slds-notify slds-notify_alert slds-alert_error lds-m-top_small sticky" role="alert">
+        <div class="slds-notify__content slds-text-align_left">
+          <h2 class="slds-text-heading_small slds-text-align_left">
+            <lightning:icon iconName="utility:error" size="x-small" class="slds-m-right_x-small" variant="inverse" />{!$Label.cuco.add_conditions}</h2>
+            <aura:iteration items="{!v.errors}" var="error" indexVar="errindex">
+              <p class="slds-text-align_left slds-p-left_x-small slds-p-top_x-small slds-p-bottom_xx-small">{!error.title}</p>
+              <ul class="slds-text-align_left slds-list_dotted">
+                <aura:iteration items="{!error.messages}" var="message" indexVar="msgindex">
+                  <li>{!message}</li>
+                </aura:iteration>
+              </ul>
+            </aura:iteration>
+            <div class="slds-notify__close top">
+            <lightning:buttonIcon iconName="utility:close" onclick="{!c.dismissWarning}" variant="bare-inverse" title="{!$Label.cuco.close}" alternativeText="{!$Label.cuco.close}"/>
+          </div>
+        </div>
+      </div>
+    </aura:if>
+    {!v.body}
+  </div>
+  <footer class="slds-modal__footer">
+    <lightning:layout>
+      <lightning:layoutItem flexibility="auto, no-grow" padding="around-none">
+        <lightning:button label="{!$Label.cuco.cancel}" onclick="{!c.handleCancel}" class="slds-m-top_none" />
+      </lightning:layoutItem>
+      <lightning:layoutItem flexibility="auto" padding="horizontal-medium" class="slds-m-top_x-small">
+        <aura:if isTrue="{!v.numFamilies gt 1}">
+          <lightning:progressIndicator currentStep="{!v.currentIndex}" type="base" hasError="{!v.showWarning}" variant="base">
+            <aura:iteration items="{!v.familyNames}" var="familyName" indexVar="familyIndex">
+              <lightning:progressStep label="{!familyName}" value="{!familyIndex}" />
+            </aura:iteration>
+          </lightning:progressIndicator>
+        </aura:if>
+      </lightning:layoutItem>
+      <lightning:layoutItem flexibility="auto, no-grow" padding="around-none">
+        <lightning:button label="{!(v.currentIndex + 1 lt v.numFamilies) ? $Label.cuco.save_next : $Label.cuco.save}" onclick="{!c.handleContinue}" variant="brand" class="slds-m-top_none" />
+      </lightning:layoutItem>
+  </lightning:layout>
+  </footer>
+</aura:component>

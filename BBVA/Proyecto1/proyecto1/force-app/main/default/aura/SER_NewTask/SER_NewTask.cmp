@@ -1,0 +1,116 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+  access="global"  extends="c:SER_Connection" controller="SER_RTM_Task_CallWS">
+  <aura:attribute name="recordId" type="Id"/>
+  <aura:attribute name="taskId" type="Id"/>
+  <aura:attribute name="priorityOptions" type="List"/>
+  <aura:attribute name="selectedPriority" type="String"/>
+  <aura:attribute name="departamentOptions" type="List"/>
+  <aura:attribute name="selecteddepartament" type="String"/>
+  <aura:attribute name="resolutorOptions" type="List"/>
+  <aura:attribute name="selectedResolutor" type="String"/>
+  <aura:attribute name="tecImpactOptions" type="List"/>
+  <aura:attribute name="selectedTecImpact" type="String"/>
+  <aura:attribute name="caseTecImpact" type="String"/>
+  <aura:attribute name="comments" type="String"/>
+  <aura:attribute name="description" type="String"/>
+  <aura:attribute name="selectedRecord" type="Object" description="selected lookup Record Details"/>
+  <aura:attribute name="bl_DisplayModal" type="Boolean"/>
+  <aura:attribute name="bl_DisplayRemedy" type="Boolean"/>
+  <aura:attribute name="error" type="boolean" default="false" />
+  <aura:attribute name="errormessage" type="String" access="private" default="" />
+
+  <div class="slds-page-header slds-grid forceActionsContainer slds-box_x-small slds-align_absolute-center ">
+    <div class="slds-size_0-of-1">
+      <div class=" slds-box_x-small ">
+        <lightning:button class=" slds-button slds-button--neutral not-selected slds-not-selected uiButton"
+          label="{!$Label.c.SER_EGS_NewTask_lbl}" name="New Task" onclick="{!c.doInit}" />
+      </div>
+    </div>
+  </div>
+
+  <aura:if isTrue="{!v.bl_DisplayModal}">
+    <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container cls_modalcontainer_console_aligned" id="div_ModalContainer">
+        <div class="slds-modal__header">
+          <h1 id="header99" class="slds-text-heading--medium">{!$Label.c.SER_EGS_NewTask_lbl}</h1>
+        </div>
+        <div class="slds-modal__content slds-p-around--medium slds-form_compound slds-modal_large bodyHeight">
+          <lightning:messages/>
+          <aura:if isTrue="{!v.error}">
+            <h1 id="header98" class="slds-text-heading--medium" style="color: red; font-weight: 400;">{!v.errormessage}</h1>
+          </aura:if>
+          <lightning:spinner class="slds-hide slds-m-top_xx-large slds-m-bottom_xx-large" aura:id="Spinner" alternativeText="Loading" size="large" variant="base"/>
+          <div class="slds-section slds-is-open">
+            <h3 class="slds-section__title slds-theme_shade">
+              <span class="slds-truncate slds-p-horizontal_small" title="Section Title">{!$Label.c.SER_EGS_TaksInformation_lbl}</span>
+            </h3>
+            <div aria-hidden="false" class="slds-section__content">
+              <div class="slds-grid slds-wrap">
+                <div class="slds-size_1-of-2">
+                  <lightning:select name="resolutorId" label="Resolution Team" aura:id="resolutorId" value="{!v.selectedResolutor}" required="true">
+                    <aura:iteration items="{!v.resolutorOptions}" var="optionR">
+                        <option text="{!optionR.label}" value="{!optionR.id}" selected="{!optionR.selected}"/>
+                    </aura:iteration>
+                  </lightning:select>
+                </div>
+                <div class="slds-size_1-of-2">
+                  <div class="slds-p-left_x-small">
+                    <c:SER_Lookup aura:id="relatedId" objectName="Case" fieldName="CaseNumber" label="Related To" iconName="standard:case" placeholder="Search..." required="false" selectedRecord="{#v.selectedRecord}"/>
+                  </div>
+                </div>
+                <div class="slds-size_1-of-2">
+                  <lightning:input type="checkbox" label="Notification Global Direct Channels GMM" class="slds-m-top_medium slds-m-bottom_x-small" aura:id="seCheck"/>
+                </div>
+                <div class="slds-size_1-of-2">
+                  <lightning:input type="checkbox" label="Notification FUCIB" class="slds-p-left_x-small slds-m-top_medium slds-m-bottom_x-small" aura:id="fcCheck"/>
+                </div>
+                <div class="slds-size_1-of-2">
+                  <lightning:select name="TecImpId" label="Technical Impact" aura:id="TechImpId" value="{!v.selectedTecImpact}">
+                    <aura:iteration items="{!v.tecImpactOptions}" var="optionTcIm">
+                        <option text="{!optionTcIm.label}" value="{!optionTcIm.id}" selected="{!optionTcIm.selected}"/>
+                    </aura:iteration>
+                  </lightning:select>
+                </div>
+                <div class="slds-size_1-of-2">
+                  <lightning:input type="checkbox" name="chActionName" label="Action Line" class="slds-p-left_x-small slds-m-top_medium slds-m-bottom_x-small" aura:id="ch_ActionLine" checked="false"/>
+                </div>
+              </div>
+              <lightning:textarea label="Problem Description" value="{!v.description}"/>
+              <lightning:textarea label="Comment to Task" value="{!v.comments}" class="slds-m-top_x-small" title="Explain more details to solve the task"/>
+            </div>
+          </div>
+
+          <aura:if isTrue="{!v.bl_DisplayRemedy}">
+            <div class="slds-section slds-is-open">
+              <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">{!$Label.c.SER_EGS_Remedy_lbl}</span>
+              </h3>
+              <div aria-hidden="false" class="slds-section__content">
+                <lightning:select name="departamentId" label="Remedy Department" aura:id="departamentId" value="{!v.selecteddepartament}">
+                    <aura:iteration items="{!v.departamentOptions}" var="optionD">
+                        <option text="{!optionD.label}" value="{!optionD.id}" selected="{!optionD.selected}"/>
+                    </aura:iteration>
+                </lightning:select>
+                <lightning:select name="priorityId" label="Prioridad" aura:id="priorityId" value="{!v.selectedPriority}">
+                  <aura:iteration items="{!v.priorityOptions}" var="optionP">
+                      <option text="{!optionP.label}" value="{!optionP.id}" selected="{!optionP.selected}"/>
+                  </aura:iteration>
+                </lightning:select>
+                <c:SER_RTM_Task_TicketComment aura:id="New Remedy" id_TaskID="{!v.id_TaskID}" label="Comment to Remedy" info="Comment sent to Remedy"/>
+              </div>
+            </div>
+          </aura:if>
+        </div>
+
+        <div class="slds-modal__footer">
+          <button class="slds-button slds-button--neutral" onclick="{!c.fn_CloseModal}">{!$Label.c.SER_EGS_Cancel_lbl}</button>
+          <button class="slds-button slds-button--brand" onclick="{!c.fn_SaveTask}" id="saveButton">{!$Label.c.SER_EGS_Save_lbl}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="slds-backdrop slds-backdrop--open">
+    </div>
+  </aura:if>
+
+</aura:component>

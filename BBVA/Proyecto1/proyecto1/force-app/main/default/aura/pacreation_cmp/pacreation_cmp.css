@@ -1,0 +1,23 @@
+.THIS .maxHeight {
+  height: 255px !important;
+}
+
+.THIS .slds-form-element {
+  width: 300px;
+}
+
+.THIS .slds-table_header-fixed_container {
+  background-color: white;
+}
+
+.THIS .row.ps {
+  padding-bottom: 20px;
+}
+
+.THIS .row.client {
+  padding-bottom: 15px;
+}
+
+.THIS .slds-form-element__control.slds-grow {
+  width: 239%;
+}

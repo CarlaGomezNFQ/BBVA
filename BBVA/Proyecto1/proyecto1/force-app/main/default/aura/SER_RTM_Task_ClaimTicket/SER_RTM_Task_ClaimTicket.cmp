@@ -1,0 +1,9 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+access="global"  extends="c:SER_Connection" controller="SER_RTM_Task_CallWS">
+  <aura:attribute name="id_TaskID" type="Id" access="public"/>
+
+  <div>
+    <lightning:messages />
+    <c:SER_RTM_Task_TicketComment aura:id="Claim Remedy" id_TaskID='{!v.id_TaskID}'/>
+  </div>
+</aura:component>

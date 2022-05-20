@@ -1,0 +1,230 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="dataRow" type="Object"/>
+    <aura:attribute name="isSP2" type="Boolean" default="true"/>
+    <aura:attribute name="showSubSection" type="String" default="visibleSubSect"/>
+    <lightning:accordion aura:id="accordion" allowMultipleSectionsOpen="true">
+        <lightning:accordionSection name="A" label="DETAILS">
+            <br/>
+            <label class="slds-form-element__label contentLabel">Finalized by</label>
+            <div class="slds-form-element__control slds-form-element slds-form-element_readonly" style="width: 46.5%">
+                <span>{!v.dataRow.finalizedBy}</span>
+            </div>
+            <br/>
+            <label class="slds-form-element__label contentLabel">Date of Analysis</label>
+            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                <span>{!v.dataRow.evalDate}</span>
+            </div>
+            <br/>
+            <label class="slds-form-element__label contentLabel">Validated by</label>
+            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                <span>{!v.dataRow.finalizedBy}</span>
+            </div>
+            <br/>
+            <label class="slds-form-element__label contentLabel">Rating Model</label>
+            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                <span>{!v.dataRow.model}</span>
+            </div>
+            <br/>
+            <label class="slds-form-element__label contentLabel">Date of FFSS linked to the SAR</label>
+            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                <span>{!v.dataRow.evaluationDate}</span>
+            </div>
+        </lightning:accordionSection>
+        <lightning:accordionSection name="C" label="STANDALONE RATING">
+            <aura:if isTrue="{!v.isSP2}">
+                <br/>
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Subactivity IA">SUBACTIVITY IA</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Country">COUNTRY</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Template">TEMPLATE</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Weight Contribution SubIndustry">WEIGHT CONTRIBUTION SUBINDUSTRY</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Business Risk">BUSINESS RISK SCORE</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Financial Risk">FINANCIAL RISK SCORE</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Total Score">TOTAL SCORE</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Rating Score">RATING SCORE</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.dataRow.templates}" var="lineItem" indexVar="i">
+                            <tr class="slds-hint-parent">
+                                <th data-label="ubactivity IA" scope="row">
+                                    <div class="slds-truncate" title="AA">{!lineItem.subindustry.id}</div>
+                                </th>
+                                <td data-label="Country">
+                                    <div class="slds-truncate" title="BB">{!lineItem.country.id}</div>
+                                </td>
+                                <td data-label="Template">
+                                    <div class="slds-truncate" title="95">{!lineItem.id}</div>
+                                </td>
+                                <td data-label="Weight Contribution SubIndustry">
+                                    <div class="slds-truncate" title="95">{!lineItem.weight}</div>
+                                </td>
+                                <td data-label="Business Risk">
+                                    <div class="slds-truncate" title="95">{!lineItem.businessRiskScore}</div>
+                                </td>
+                                <td data-label="Financial Risk">
+                                    <div class="slds-truncate" title="95">{!lineItem.financialRiskScore}</div>
+                                </td>
+                                <td data-label="Total Score">
+                                    <div class="slds-truncate" title="95">{!lineItem.totalScore}</div>
+                                </td>
+                                <td data-label="Rating Score">
+                                    <div class="slds-truncate" title="95">{!lineItem.longScaleValue}</div>
+                                </td>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </aura:if>
+            <br/>
+            <div class="c-container">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="4" padding="around-small">
+                        <label class="slds-form-element__label contentLabel">Financial flexibility Risk Score</label>
+                        <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                            <span>{!v.dataRow.finanFlexRiskScore}</span>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="8" padding="around-small"></lightning:layoutItem>
+                    <div class="slds-section slds-media slds-size_1-of-1" style="padding-left:0px !important;">
+                        <div class="slds-text-heading--label slds-media slds-size_1-of-1" style="padding-left:2px !important;">
+                          <lightning:button label="Standalone Rating" class="slds-text-heading--label" aura:id="Financial_Flexibility" name="Financial_Flexibility"
+                            iconName="{!v.showSubSection == 'visibleSubSect' ? 'utility:chevrondown' :'utility:chevronright'}" onclick="{!c.subsectionHide}"
+                            variant="bare" />
+                        </div>
+                    </div>
+                    <lightning:layoutItem size="4" padding="around-small">
+                        <div class='{!v.showSubSection}'>
+                            <label class="slds-form-element__label contentLabel">Weighted Average of ISRMs rating</label>
+                            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                                <span>{!v.dataRow.anchorLong}</span>
+                            </div>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="4" padding="around-small">
+                        <div class='{!v.showSubSection}'>
+                            <label class="slds-form-element__label contentLabel">Weighted Average of ISRMs score</label>
+                            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                                <span>{!v.dataRow.anchorScore}</span>
+                            </div>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="4" padding="around-small"></lightning:layoutItem>
+                    <lightning:layoutItem size="4" padding="around-small">
+                        <div class='{!v.showSubSection}'>
+                            <label class="slds-form-element__label contentLabel">Diversification adjustment</label>
+                            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                                <span>{!v.dataRow.diverAdjustm}</span>
+                            </div>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="8" padding="around-small"></lightning:layoutItem>
+                    <lightning:layoutItem size="4" padding="around-small">
+                        <div class='{!v.showSubSection}'>
+                            <label class="slds-form-element__label contentLabel slds-text-title_bold">Standalone Rating</label>
+                            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                                <span>{!v.dataRow.standaloneLong}</span>
+                            </div>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="4" padding="around-small">
+                        <div class='{!v.showSubSection}'>
+                            <label class="slds-form-element__label contentLabel slds-text-title_bold">Standalone score</label>
+                            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                                <span>{!v.dataRow.standaloneScore}</span>
+                            </div>
+                        </div>
+                    </lightning:layoutItem>
+                </lightning:layout>
+
+            </div>
+        </lightning:accordionSection>
+        <lightning:accordionSection name="D" label="OVERLAYS RATING">
+            <br/>
+            <label class="slds-form-element__label contentLabel">GRE</label>
+            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                <span>{!v.dataRow.gre}</span>
+            </div>
+            <br/>
+            <label class="slds-form-element__label contentLabel">Parent Adjustment</label>
+            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                <span>{!v.dataRow.parentAd}</span>
+            </div>
+            <br/>
+            <label class="slds-form-element__label contentLabel">Sovereign Cap</label>
+            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                <span>{!v.dataRow.soveCap}</span>
+            </div>
+            <br/>
+            <label class="slds-form-element__label contentLabel">WL</label>
+            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                <span>{!v.dataRow.wl}</span>
+            </div>
+            <br/>
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col">
+                    <label class="slds-form-element__label contentLabel slds-text-title_bold">Overlays Rating</label>
+                    <div class="slds-form-element__control slds-form-element slds-form-element_readonly slds-text-title_bold">
+                        <span>{!v.dataRow.overlaysLong}</span>
+                    </div>
+                </div>
+                <div class="slds-col">
+                    <label class="slds-form-element__label contentLabel">Score</label>
+                    <div class="slds-form-element__control slds-form-element slds-form-element_readonly">
+                        <span>{!v.dataRow.overlaysScore}</span>
+                    </div>
+                </div>
+            </div>
+        </lightning:accordionSection>
+        <lightning:accordionSection name="E" label="FINAL RATING">
+            <br/>
+            <label class="slds-form-element__label contentLabel">Override</label>
+            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                <span>{!v.dataRow.overrideRating}</span>
+            </div>
+            <br/>
+            <label class="slds-form-element__label contentLabel">Reason</label>
+            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                <span>{!v.dataRow.reason}</span>
+            </div>
+            <br/>
+            <label class="slds-form-element__label contentLabel">Date</label>
+            <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                <span>{!v.dataRow.evalDate}</span>
+            </div>
+            <br/>
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col">
+                    <label class="slds-form-element__label contentLabel slds-text-title_bold">Final Rating</label>
+                    <div class="slds-form-element__control slds-form-element slds-form-element_readonly slds-text-title_bold"  style="width: 46.5%">
+                        <span>{!v.dataRow.finalLong}</span>
+                    </div>
+                </div>
+                <div class="slds-col">
+                    <label class="slds-form-element__label contentLabel">Score</label>
+                    <div class="slds-form-element__control slds-form-element slds-form-element_readonly"  style="width: 46.5%">
+                        <span>{!v.dataRow.finalScore}</span>
+                    </div>
+                </div>
+            </div>
+        </lightning:accordionSection>
+    </lightning:accordion>
+</aura:component>

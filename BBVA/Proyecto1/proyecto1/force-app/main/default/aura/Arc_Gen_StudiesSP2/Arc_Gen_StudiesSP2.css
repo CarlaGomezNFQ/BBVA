@@ -1,0 +1,16 @@
+.THIS .tablecol {
+  font-size: 0.98rem;
+}
+
+.THIS .pageSelection {
+  position: absolute;
+}
+
+.THIS .buttonsBar {
+  margin: 0 auto;
+  width: max-content;
+}
+
+.THIS .pagesCombo {
+  display: inline-block;
+}

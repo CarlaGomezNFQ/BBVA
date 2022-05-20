@@ -1,0 +1,56 @@
+<aura:component extends="dwp_mdal:ModalTemplate_cmp" access="global">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:registerEvent name="flatRatesSetupHelpEvt" type="cuco:flat_rates_setup_help_evt"/>
+
+    <!-- Modal attributes -->
+    <aura:attribute name="hide" type="Boolean"  default="false" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="closeButton" type="Boolean"  default="true" />
+    <aura:attribute name="hasHeader" type="Boolean"  default="true" />
+    <aura:attribute name="modalSizeSLDS" type="String" default="slds-modal_large" />
+
+    <aura:attribute name="isSuccess" type="Boolean" default="false" />
+    <aura:attribute name="pygCatAccs" type="List" />
+
+    <aura:set attribute="title" value="{!$Label.cuco.flat_rates_account_detail}" />
+
+    <aura:if isTrue="{!v.isSuccess}">
+        <div class="slds-modal__content slds-var-p-around_x-large modalBodyHeight">
+            <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered">
+                <thead>
+                    <tr class="slds-grid slds-wrap slds-border_left slds-border_right">
+                        <th class="slds-size_2-of-6 noPaddingLeft slds-p-left_small" scope="col">
+                            <div class="slds-truncate slds-p-vertical_x-small slds-p-left_x-small">{!$Label.cuco.flat_rates_help_name}</div>
+                        </th>
+                        <th class="slds-size_1-of-6 noPaddingLeft" scope="col">
+                            <div class="slds-truncate slds-p-vertical_x-small slds-p-left_x-small">{!$Label.cuco.flat_rates_help_code}</div>
+                        </th>
+                        <th class="slds-size_3-of-6" scope="col">
+                            <div class="slds-truncate slds-p-vertical_x-small slds-p-right_x-small">{!$Label.cuco.flat_rates_help_description}</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.pygCatAccs}" var="pygCatAcc">
+                        <tr class="slds-grid slds-wrap slds-border_left slds-border_right">
+                            <td class="slds-size_2-of-6 noPaddingLeft slds-p-left_small">
+                                <div class="slds-p-vertical_x-small slds-p-left_x-small textWhiteSpace">{!pygCatAcc.name}</div>
+                            </td>
+                            <td class="slds-size_1-of-6">
+                                <div class="slds-p-vertical_x-small slds-p-right_x-small textWhiteSpace">{!pygCatAcc.code}</div>
+                            </td>
+                            <td class="slds-size_3-of-6 noPaddingRight slds-p-right_small">
+                                <div class="slds-p-vertical_x-small slds-p-right_x-small textWhiteSpace">{!pygCatAcc.description}</div>
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+        <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="{!$Label.cuco.cancel}" onclick="{!c.handleFlatRatesSetupHelpCancel}" class="slds-float_left" />
+        </footer>
+    </aura:if>
+
+</aura:component>

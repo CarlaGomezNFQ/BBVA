@@ -1,0 +1,65 @@
+.THIS .validbullet {
+  height: 10px;
+  width: 10px;
+  background: green;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.THIS .demo-only {
+  margin-bottom: 2em;
+}
+
+.THIS .slds-icon-utility-check svg {
+  fill: #00c6b7;
+}
+
+.THIS .slds-icon-utility-close svg {
+  fill: #ef6e64;
+}
+
+.THIS .slds-icon-utility-warning svg {
+  fill: #ffb75d;
+}
+
+.THIS .slds-text-heading--center.slds-m-bottom_medium {
+  margin-left: 8px;
+  margin-bottom: -1px;
+}
+
+.THIS .slds-grid.slds-gutters {
+  margin-left: 0;
+  margin-right: -139px;
+}
+
+.THIS.cList_cmp .slds-text-heading--center.slds-m-bottom_medium {
+  margin-left: 8px;
+  margin-bottom: -1px;
+  font-size: initial;
+}
+
+.THIS .testCSSClass1 {
+  cursor: not-allowed;
+  display: inline-block;
+  pointer-events: none;
+  text-decoration: none;
+  height: 40px;
+}
+
+.THIS .testCSSClass1 span {
+  margin-top: 6px;
+}
+
+.THIS .testCSSClass1 span a {
+  color: var(--sds-c-modal-content-text-color, var(--sds-c-modal-text-color));
+}
+
+.THIS .testCSSClass1 .slds-button__icon_small {
+  display: none;
+}
+
+.THIS .psCss {
+  font-weight: 700;
+  background-color: #f3f2f2;
+}

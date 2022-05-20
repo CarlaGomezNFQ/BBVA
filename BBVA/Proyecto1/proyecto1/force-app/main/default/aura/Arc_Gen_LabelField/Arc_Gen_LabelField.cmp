@@ -1,0 +1,4 @@
+<aura:component  access="global" >
+  <aura:attribute name="fieldValue" type="String"/>
+  <lightning:input name="field" readonly="true" value="{!v.fieldValue}" label="{!$Label.arce.Arc_Gen_Industry_Risk_valuation}" />
+</aura:component>

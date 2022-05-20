@@ -1,0 +1,11 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,force:hasSObjectName,force:hasRecordId" access="global">
+
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="cucoType" type="String" default="Renewal" />
+
+
+
+    <cuco:generic_action_cmp profitabilitySheetId="{!v.recordId}" cucoType="{!v.cucoType}" />
+
+
+</aura:component>

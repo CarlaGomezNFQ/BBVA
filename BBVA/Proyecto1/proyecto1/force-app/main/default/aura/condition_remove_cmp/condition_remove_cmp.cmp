@@ -1,0 +1,32 @@
+<aura:component implements="force:hasRecordId" extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="cuco.ConditionsRemove_Ctrl">
+
+  <aura:attribute name="question" type="String" />
+  <aura:attribute name="profAnalysisId" type="String" />
+  <aura:attribute name="conditionId" type="String" />
+  <aura:attribute name="recordId" type="String" />
+  <aura:attribute name="showInformativeWarning" type="Boolean" default="false"/>
+
+  <aura:registerEvent name="refresh_conditions_evt" type="cuco:refresh_conditions_evt"/>
+  <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+  <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <aura:set attribute="title" value="{!$Label.cuco.remove_condition_title}" />
+  <div class="slds-modal__content slds-p-around_medium slds-is-relative" id="modal-content-id-1">
+    <aura:if isTrue="{!v.waiting}">
+      <lightning:spinner variant="brand" alternativeText="Loading..." />
+    </aura:if >
+    <div class="{!v.showInformativeWarning == true ? 'slds-card slds-m-top_x-small slds-align_absolute-center minHeight10 alignCenter' : 'slds-card slds-m-top_x-small slds-align_absolute-center minHeight10'}">
+      {!v.question}
+    </div>
+    <aura:if isTrue="{!v.showInformativeWarning}">
+      <div class="slds-card slds-m-around_x-small slds-align_absolute-center slds-form-element__label alignCenter minHeight3">
+        {!$Label.cuco.informative_condition_remove_warning}
+      </div>
+    </aura:if>
+  </div>
+  <footer class="slds-modal__footer">
+    <lightning:button label="{!$Label.cuco.cancel}" onclick="{!c.handleCancel}" class="slds-m-top_x-small" />
+    <lightning:button label="{!$Label.cuco.remove}" onclick="{!c.handleRemove}" variant="brand" class="slds-m-top_x-small" />
+  </footer>
+</aura:component>

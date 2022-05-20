@@ -1,0 +1,18 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+access="global"  extends="c:SER_Connection" controller="SER_RTM_CallWS">
+  <aura:attribute name="id_CaseID" type="Id" access="public"/>
+  <aura:attribute name="id_RTID" type="Id" access="public"/>
+  <aura:attribute name="test" type="String" access="public" default="testing"/>
+  <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+    <aura:if isTrue="{!v.id_RTID}">
+      <lightning:recordEditForm aura:id="recordViewForm"
+    recordId="{!v.id_CaseID}"
+    recordTypeId="{!v.id_RTID}"
+    objectApiName="Case">
+      <lightning:messages />
+      <lightning:inputField fieldName="Priority" aura:id="priority"/>
+      <lightning:inputField fieldName="SER_Remedy_Department__c" aura:id="department"/>
+      <c:SER_RTM_TicketComment aura:id="Reopen Remedy" id_CaseID='{!v.id_CaseID}'/>
+    </lightning:recordEditForm>
+    </aura:if>
+</aura:component>

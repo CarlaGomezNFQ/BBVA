@@ -1,0 +1,11 @@
+.THIS .minHeight3 {
+  min-height: 3rem;
+}
+
+.THIS .minHeight10 {
+  min-height: 5rem;
+}
+
+.THIS .alignCenter {
+  text-align: center;
+}

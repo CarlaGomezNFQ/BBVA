@@ -1,0 +1,40 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" extends="c:SER_Connection">
+    <aura:attribute name="recordId" type="Id" access="public" />
+    <aura:attribute name="bl_DisplayModal" type="Boolean" access="public"/>
+    <aura:handler name="closemodal" event="c:SER_CloseModalWindow"
+    action="{!c.fn_CloseModal}"/>
+    <div class="slds-card">
+    	<div class="slds-m-vertical_small">
+            <div class="slds-m-left_small">
+                <lightning:recordViewForm recordId="{!v.recordId}" objectApiName="Case">
+                	<table>
+                        <tr>
+                        	<td class="format">
+                            	<lightning:outputField fieldName="SER_RemedyId__c"/>
+          					</td>
+                            <td>
+                            	&nbsp;
+                            </td>
+ 							<td class="format">
+                            	<lightning:outputField fieldName="SER_Remedy_url__c" />
+                  			</td>
+                        </tr>
+       					<tr>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td class="format">
+                            	<lightning:outputField fieldName="SER_Commitment_Date__c" />
+                        	</td>
+                            </tr>
+                    </table>
+                        <lightning:button variant="brand" label="Send to Remedy" onclick="{!c.handleClick}" />
+                </lightning:recordViewForm>
+      </div>
+    </div>
+    </div>
+    <aura:if isTrue="{!v.bl_DisplayModal}">
+        <c:SER_RemedyTicketManagement id_CaseID="{!v.recordId}"/>
+    </aura:if>
+</aura:component>

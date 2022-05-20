@@ -1,0 +1,66 @@
+.THIS .content{
+    border:1px #CDCDCD solid; 
+    border-radius:5px; 
+    margin:5px;
+    padding:20px 10px 10px 10px;
+}
+.THIS h1{
+    font-weight:bold; 
+    font-size:1.3em;
+}
+
+.THIS.customBox {
+	padding:30px 30px 50px 30px;
+}
+
+.THIS .customP {
+	height:200px;
+	text-align:center;
+	padding-top:100px;
+}
+
+.THIS .customDiv {
+	width:100%;
+	margin-top:10px;
+}
+
+.THIS .customHref {
+	float:left;
+}
+
+.THIS .customSpan {
+	float:right;
+}
+
+.THIS .customSpan2 {
+	margin-right:10px;
+}
+
+.THIS.mobileCustomDiv {
+	padding:30px 30px 50px 30px;
+	height:100%;
+	width:100%
+}
+
+.THIS .mobileCustomP {
+	height:200px;
+	text-align:center;
+	padding-top:100px;
+}
+
+.THIS .mobileCustomDiv2 {
+	width:100%;
+	margin-top:10px;
+}
+
+.THIS .mobileCustomA {
+	float:left;
+}
+
+.THIS .mobileCustomSpan {
+	float:right;
+}
+
+.THIS .mobileCustomSpan2 {
+	margin-right:10px;
+}

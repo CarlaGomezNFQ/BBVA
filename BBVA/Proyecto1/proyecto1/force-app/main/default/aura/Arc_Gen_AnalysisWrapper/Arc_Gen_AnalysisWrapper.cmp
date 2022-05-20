@@ -1,0 +1,21 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="arce.Arc_Gen_AnalysisSummary_Controller">
+  <aura:attribute name="recordId" type="String"/>
+  <aura:attribute name="jsonInput" type="String"/>
+  <aura:attribute name="uniqueName" type="String"/>
+  <aura:attribute name="nameCards" type="String"/>
+  <aura:attribute name="validated" type="Boolean"/>
+  <aura:attribute name="obtained" type="Boolean" default="false"/>
+  <aura:attribute name="model" type="String"/>
+  <aura:handler name="init" value="{!this}" action="{!c.init}" />
+  <aura:if isTrue="{!v.obtained}">
+    <arce:Arc_Gen_AnalysisSummary recordId = "{!v.recordId}" modelSelctd="{!v.model}"/>
+    <br/>
+    <arce:Arc_Gen_ActivityInput_Wrapper
+      recordId = "{!v.recordId}"
+      jsonInput= "{!v.jsonInput}"
+      uniqueName= "{!v.uniqueName}"
+      nameCards= "{!v.nameCards}"
+      modelSelctd="{!v.model}"
+      isValidated="{!v.validated}"/>
+  </aura:if>
+</aura:component>

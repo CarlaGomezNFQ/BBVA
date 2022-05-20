@@ -1,0 +1,87 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="cuco.External_Documents_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="force:refreshView" action="{!c.doInit}"/>
+
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="showCmp" type="Boolean" default="false"/>
+    <aura:attribute name="extension" type="String"/>
+    <aura:attribute name="extensionList" type="List"/>
+    <aura:attribute name="icon" type="String"/>
+    <aura:attribute name="numExtDocs" type="Integer" default="3"/>
+    <aura:attribute name="sObjectName" type="String"/>
+    <aura:attribute name="extDoc" type="Object" access="global"/>
+    <aura:attribute name="extDocList" type="List"/>
+    <aura:attribute name="errMessage" type="String"/>
+    <aura:attribute name="showViewAll" type="Boolean"/>
+    <aura:attribute name="width" type="String" description=" width of parent region"/>
+    <aura:attribute name="title" type="String"/>
+    <aura:attribute name="showAllDocs" type="Boolean" default="false" />
+
+    <div aura:id="loadSpinner">
+        <lightning:spinner aura:id="simpleSpinner" alternativeText="loading..." class="backOff" variant="brand" size="large" />
+    </div>
+    <aura:if isTrue="{!v.showCmp}">
+        <div class="slds-box">
+            <div class="slds-grid slds-grid_vertical">
+                <div class="slds-col slds-p-bottom_medium">
+                    <div class="slds-media slds-media_center">
+                        <div class="slds-media__figure">
+                            <lightning:icon iconName="standard:document"/>
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                                <span>{!$Label.cuco.ext_docs_title}</span>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-p-horizontal_xx-large">
+                    <div class="slds-grid slds-wrap">
+                        <aura:iteration items="{!v.extDocList}" var="extDoc" indexVar="indexDoc">
+                            <aura:if isTrue="{!v.showAllDocs}">
+                                <div class="slds-col slds-p-bottom_medium slds-small-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3 slds-size_1-of-3">
+                                    <div class="slds-media slds-media_center">
+                                        <div class="slds-media__figure">
+                                            <lightning:icon iconName="{!extDoc.externalDocumentIcon}"/>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <div class="slds-card__header-title">
+                                                <lightning:button variant="base" label="{!extDoc.externalDocumentNameWithExtension}" name="{!extDoc.externalOperationId + '_' + extDoc.externalDocumentId}" onclick="{!c.handleDocClick}"/>
+                                            </div>
+                                            {!$Label.cuco.ext_docs_date}&nbsp;<lightning:formattedDateTime value="{!extDoc.externalDocumentDate}" year="numeric" month="numeric" day="numeric"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <aura:set attribute="else">
+                                    <aura:if isTrue="{!indexDoc &lt; 3}">
+                                        <div class="slds-col slds-p-bottom_medium slds-small-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3 slds-size_1-of-3">
+                                            <div class="slds-media slds-media_center">
+                                                <div class="slds-media__figure">
+                                                    <lightning:icon iconName="{!extDoc.externalDocumentIcon}"/>
+                                                </div>
+                                                <div class="slds-media__body">
+                                                    <div class="slds-card__header-title">
+                                                        <lightning:button variant="base" label="{!extDoc.externalDocumentNameWithExtension}" name="{!extDoc.externalOperationId + '_' + extDoc.externalDocumentId}" onclick="{!c.handleDocClick}"/>
+                                                    </div>
+                                                    {!$Label.cuco.ext_docs_date}&nbsp;<lightning:formattedDateTime value="{!extDoc.externalDocumentDate}" year="numeric" month="numeric" day="numeric"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </aura:if>
+                                </aura:set>
+                            </aura:if>
+                        </aura:iteration>
+                    </div>
+                </div>
+                <aura:if isTrue="{!v.extDocList.length &gt; 3}">
+                    <div class="slds-col slds-border_top slds-p-top_medium">
+                        <div class="slds-align_absolute-center">
+                            <lightning:button variant="base" label="{!$Label.cuco.ext_docs_view_all}" onclick="{!c.changeDocVisibility}"/>
+                        </div>
+                    </div>
+                </aura:if>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

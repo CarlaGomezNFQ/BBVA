@@ -1,0 +1,15 @@
+.THIS .slds-modal__content {
+  height: 450px;
+}
+
+.THIS .maxHeight {
+  height: 255px !important;
+}
+
+.THIS .slds-form-element {
+  width: 300px;
+}
+
+.THIS .slds-table_header-fixed_container {
+  background-color: white;
+}

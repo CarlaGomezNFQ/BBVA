@@ -1,0 +1,13 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"  controller="arce.Arc_Gen_initFinalRating_Controller" access="global" >
+
+    <!-- Attributes-->
+    <aura:attribute name="showTable" type="Boolean" default='false'/>
+
+    <!-- Aura Handlers-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:if isTrue="{!v.showTable}">
+        <dwp_dv:Configurable_Table_Display_cmp recordId="{!v.recordId}" configurationId='Arc_Gen_FinalRating_ActivitySplit2012'/>
+    </aura:if>
+
+</aura:component>

@@ -1,0 +1,63 @@
+.THIS .icon-blue {
+  color: #0070d2;
+  cursor: pointer;
+}
+
+.THIS .flatpad {
+  margin-left: 1.9em;
+}
+
+.THIS .must_select_conditions {
+  position: sticky;
+  z-index: 1000;
+  top: 0;
+}
+
+.THIS .slds-accordion__summary-action-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  line-height: 1;
+}
+
+.THIS .indeterminated .slds-checkbox_faux {
+  background-image: url('data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%3E%3Crect%20fill%3D%22%23295293%22%20height%3D%222%22%20width%3D%228%22%20x%3D%223%22%20y%3D%226%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.THIS .conditions_section {
+  justify-content: left;
+  height: 0.75rem;
+  line-height: 1;
+}
+
+.THIS .checkbox-flat {
+  position: absolute;
+  top: 3px;
+  left: 30px;
+  z-index: 999;
+}
+
+.THIS .family-flat .slds-truncate {
+  padding-left: 21px;
+}
+
+.THIS .conditions_select_accordion {
+  --sds-c-accordion-color-border: #fff;
+  --sds-c-accordion-summary-color-background: #fff;
+  --sds-c-accordion-heading-font-size: 0.95rem;
+  --sds-c-accordion-sizing-border: 0;
+  --sds-c-accordion-section-spacing-block-start: 0.25rem;
+  --sds-c-accordion-section-spacing-block-end: 0.25rem;
+  --sds-c-accordion-heading-line-height: 1.25;
+  --sds-c-accordion-heading-text-color: #080707;
+  --sds-c-accordion-heading-text-color-hover: #005fb2;
+}
+
+.THIS .family-flat .slds-accordion__summary-content {
+  margin-left: 1.5rem;
+}
+
+.THIS .fontSizeSmall {
+  font-size: 11px !important;
+}

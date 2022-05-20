@@ -1,0 +1,92 @@
+<aura:component controller="SER_RemedyTab_CONTROLLER" extends="c:SER_Connection" implements="flexipage:availableForAllPageTypes,force:hasRecordId" >
+  <aura:attribute name="recordId" type="Id" access="public"/>
+  <aura:attribute name="bl_DisplayModal" type="Boolean" access="public"/>
+  <aura:attribute name="userProfile" type="String" access="public" default="false"/>
+  <aura:attribute name="UserGNC" type="String" access="public" default="false"/>
+  <aura:attribute name="UserSTE" type="String" access="public" default="false"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+  <aura:handler name="closemodal" event="c:SER_CloseModalWindow" action="{!c.fn_CloseModal}"/>
+
+  <aura:if isTrue = "{!v.userProfile}">
+    <div class="slds-card">
+      <div class="slds-m-vertical_small">
+        <div class="slds-m-left_small">
+          <lightning:recordViewForm recordId="{!v.recordId}" objectApiName="Case">
+              <aura:if isTrue = "{!v.UserGNC}">
+                <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                  <div class="slds-size_1-of-2">
+                    <div class="slds-text-align_left slds-m-around_x-small format">
+                      <lightning:outputField fieldName="SER_RemedyId__c"/>
+                    </div>
+                  </div>
+                  <div class="slds-size_1-of-2">
+                    <div class="slds-text-align_left slds-m-around_x-small format">
+                      <lightning:outputField fieldName="SER_Remedy_url__c"/>
+                    </div>
+                  </div>
+                  <div class="slds-size_1-of-2">
+                    <div class="slds-text-align_left slds-m-around_x-small format">
+                      <lightning:outputField fieldName="SER_Remedy_Department__c"/>
+                    </div>
+                  </div>
+                  <div class="slds-size_1-of-2">
+                    <div class="slds-text-align_left slds-m-around_x-small format">
+                      <lightning:outputField fieldName="SER_Commitment_Date__c"/>
+                    </div>
+                  </div>
+                  <div class="slds-size_1-of-2">
+                    <div class="slds-text-align_left slds-m-around_x-small">
+                      <lightning:outputField fieldName=""/>
+                    </div>
+                  </div>
+                  <div class="slds-size_1-of-2">
+                    <div class="slds-text-align_left slds-m-around_x-small format">
+                      <lightning:outputField fieldName="SER_Remedy_Transition_Department__c"/>
+                    </div>
+                  </div>
+                </div>
+              </aura:if>
+                <aura:if isTrue = "{!v.UserSTE}">
+                <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                  <div class="slds-size_1-of-2">
+                    <div class="slds-text-align_left slds-m-around_x-small format">
+                      <lightning:outputField fieldName="SER_RemedyId__c"/>
+                    </div>
+                  </div>
+                  <div class="slds-size_1-of-2">
+                    <div class="slds-text-align_left slds-m-around_x-small format">
+                      <lightning:outputField fieldName="SER_Remedy_url__c"/>
+                    </div>
+                  </div>
+                  <div class="slds-size_1-of-2">
+                    <div class="slds-text-align_left slds-m-around_x-small format">
+                      <lightning:outputField fieldName="SER_Remedy_Department__c"/>
+                    </div>
+                  </div>
+                  <div class="slds-size_1-of-2">
+                    <div class="slds-text-align_left slds-m-around_x-small format">
+                      <lightning:outputField fieldName="SER_Commitment_Date__c"/>
+                    </div>
+                  </div>
+                  <div class="slds-size_1-of-2">
+                    <div class="slds-text-align_left slds-m-around_x-small">
+                      <lightning:outputField fieldName=""/>
+                    </div>
+                  </div>
+                  <div class="slds-size_1-of-2">
+                    <div class="slds-text-align_left slds-m-around_x-small format">
+                      <lightning:outputField fieldName="SER_Remedy_Transition_Department__c"/>
+                    </div>
+                  </div>
+                </div>
+              </aura:if>
+            <lightning:button variant="brand" label="Send to Remedy" onclick="{!c.handleClick}"/>
+          </lightning:recordViewForm>
+        </div>
+      </div>
+    </div>
+  </aura:if>
+  <aura:if isTrue="{!v.bl_DisplayModal}">
+    <c:SER_RemedyTicketManagement id_CaseID="{!v.recordId}"/>
+  </aura:if>
+</aura:component>

@@ -1,0 +1,20 @@
+.THIS .slds-form-element__legend {
+  font-size: 1rem;
+}
+
+.THIS .slds-form-element__label {
+  font-size: 0.875rem;
+}
+
+.THIS .slds-radio {
+  padding-bottom: 0.5rem;
+}
+
+.THIS .slds-form-element__control {
+  padding-top: 0.5rem;
+}
+
+.THIS .slds-notify_alert {
+  justify-content: flex-start !important;
+  border-radius: 5px;
+}

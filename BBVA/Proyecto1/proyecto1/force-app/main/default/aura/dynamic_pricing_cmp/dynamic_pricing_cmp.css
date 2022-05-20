@@ -1,0 +1,41 @@
+.THIS .slds-box {
+  background-color: white;
+  min-width: 15%;
+}
+
+.THIS table {
+  border: 1px solid #e1e4e9;
+}
+
+.THIS th {
+  text-align: left;
+  border: 1px solid #e1e4e9;
+}
+
+.THIS .special {
+  background-color: #fafaf9;
+}
+
+.THIS .noShadow:focus {
+  box-shadow: none;
+}
+
+.THIS .childName {
+  padding-left: 2%;
+}
+
+.THIS .slds-backdrop {
+  background-color: grey;
+}
+
+.THIS tr {
+  border-bottom: 1px solid #e1e4e9;
+}
+
+.THIS .slds-section {
+  box-shadow: none;
+}
+
+.THIS .slds-accordion__section.slds-is-open {
+  background-color: rgb(243, 242, 242);
+}

@@ -1,0 +1,55 @@
+<aura:component extends="dwp_mdal:ModalTemplate_cmp" access="global">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:registerEvent name="refresh_analysis_evt" type="cuco:refresh_analysis_evt" />
+
+    <!-- Modal attributes -->
+    <aura:attribute name="hide" type="Boolean" default="false" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="closeButton" type="Boolean" default="true" />
+    <aura:attribute name="hasHeader" type="Boolean" default="true" />
+    <aura:attribute name="modalSizeSLDS" type="String" default="slds-modal_small" />
+
+    <!-- General attribute -->
+    <aura:attribute name="tooltip" type="Boolean" default="false" />
+    <aura:attribute name="profAnalysis" type="Object" />
+    <aura:attribute name="hasContractException" type="Boolean" default="false" />
+    <aura:attribute name="emptyMandatoryFields" type="Boolean" default="false" />
+
+    <aura:set attribute="title" value="{!$Label.cuco.analysis_title}" />
+
+    <div class="slds-modal__content slds-p-around_x-large">
+        <div aura:id="loadSpinner">
+            <lightning:spinner alternativeText="loading..." variant="brand" size="large" />
+        </div>
+        <aura:if isTrue="{!v.emptyMandatoryFields}">
+            <div class="round slds-notify slds-notify_alert slds-alert_error slds-m-bottom_x-large" role="alert">
+                <h2>{!$Label.cuco.mandatory_flag_details}</h2>
+            </div>
+        </aura:if>
+        <div class="slds-form-element">
+            <label class="slds-form-element__label">{!$Label.cuco.analysis_comments}</label>
+            <button onmouseover="{!c.showToolTip}" onmouseout="{!c.hideToolTip}" class="slds-button slds-button--icon">
+                <lightning:icon class="slds-p-bottom_xx-small" iconName="utility:info" size="xx-small" />
+                <aura:if isTrue="{!v.tooltip}">
+                    <div class="slds-popover slds-popover--tooltip slds-nubbin--left-top tooltipStyle" role="tooltip" aura:id="tooltip">
+                        <div class="slds-popover__body">{!$Label.cuco.analysis_comments_tooltip}</div>
+                    </div>
+                </aura:if>
+            </button>
+            <lightning:textarea label="{!$Label.cuco.analysis_comments}" value="{!v.profAnalysis.cuco__gf_pa_comments_desc__c}" maxlength="1000" class="noLabel"/>
+            <lightning:input aura:id="checkboxId" type="checkbox" label="{!$Label.cuco.analysis_contracts_flag}" checked="{!v.profAnalysis.cuco__gf_all_ct_apply_cond_ind_type__c}" onchange="{!c.handleCheckboxChange}" class="slds-m-top_x-large slds-m-bottom_xx-small"/>
+            <aura:if isTrue="{!v.hasContractException}">
+                <lightning:textarea aura:id="textContractDetails" label="{!$Label.cuco.analysis_contracts_details}" value="{!v.profAnalysis.cuco__gf_pa_all_ct_cond_app_rsn_desc__c}" maxlength="1000" placeholder="{!$Label.cuco.example_iban}" required="true" />
+                <div class="slds-p-vertical_x-small slds-grid slds-grid_vertical-align-center">
+                    <lightning:icon iconName="utility:info" size="xx-small" class="slds-col slds-m-right_small slds-p-bottom_small"/>
+                    <lightning:formattedText class="slds-form-element__label slds-col" value="{!$Label.cuco.analysis_contracts_flag_help}" />
+                </div>
+            </aura:if>
+        </div>
+    </div>
+    <footer class="slds-modal__footer">
+        <lightning:button variant="neutral" label="{!$Label.cuco.cancel}" onclick="{!c.handleCancel}" class="slds-float_left" disabled="{!v.isSuccess}" />
+        <lightning:button variant="brand" label="{!$Label.cuco.save}" onclick="{!c.handleSave}" disabled="{!v.isSuccess}"/>
+    </footer>
+</aura:component>

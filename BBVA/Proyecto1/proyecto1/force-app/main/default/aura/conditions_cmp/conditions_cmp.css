@@ -1,0 +1,25 @@
+.THIS .gray_panel {
+  background-color: #f3f2f2;
+  margin-bottom: 0.5rem;
+}
+
+.THIS .icon-blue {
+  color: #0070d2;
+  cursor: pointer;
+}
+
+.THIS .slds-accordion__list-item {
+  border: 0;
+}
+
+.THIS .product-header {
+  font-weight: 600;
+}
+
+.THIS .conditions_accordion {
+  --sds-c-accordion-color-border: #fff;
+  --sds-c-accordion-summary-color-background: #f3f2f2;
+  --sds-c-accordion-sizing-border: 0;
+  --sds-c-accordion-heading-text-color: #080707;
+  --sds-c-accordion-heading-text-color-hover: #005fb2;
+}

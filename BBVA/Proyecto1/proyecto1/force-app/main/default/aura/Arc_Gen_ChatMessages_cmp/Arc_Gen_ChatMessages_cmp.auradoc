@@ -1,0 +1,16 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Component that shows a message with a lightning chat style</b></h5>
+        <p>title - Descriptive and short title for the message</p>
+        <p>variant - Type of message, it could be Success, Error, Warning</p>
+        <p>assistiveText - Descriptive text to assist the user when the cursor is on the message</p>
+        <p>message - Message text that you would to show in a component</p>
+        <p>secondMessage - Message text that you would to show in a component</p>
+        <p>chatEvent - SLDS Class of the DIV alert</p>
+        <p>iconName - Name of the icon that will be shown</p>
+        <p><code>c:Arc_Gen_ChatMessages_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_ChatMessages_cmp" ref="c:Arc_Gen_ChatMessages_cmp" label="New Analysis Modal">
+        <p>Component that shows a message with a lightning chat style</p>
+    </aura:example>
+</aura:documentation>

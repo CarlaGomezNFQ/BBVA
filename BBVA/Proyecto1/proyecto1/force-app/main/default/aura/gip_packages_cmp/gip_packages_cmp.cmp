@@ -1,0 +1,53 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" access="global" controller="cuco.GipPackages_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    <aura:handler event="cuco:refresh_gip_packages_evt" action="{!c.handleGipPkgEvt}"/>
+
+    <aura:attribute name="lstGipPkg" type="List"/>
+    <aura:attribute name="pkgPermissions" type="Object" />
+    <aura:attribute name="showError" type="Boolean" default="true"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="sObjectName" type="String"/>
+    <aura:attribute name="canAddGipPkg" type="Boolean" default="false"/>
+    <aura:attribute name="isSuccess" type="Boolean" default="false"/>
+
+    <div aura:id="loadSpinner">
+        <lightning:spinner aura:id="simpleSpinner" alternativeText="loading..." class="backOff" variant="brand" size="large" />
+    </div>
+    <lightning:accordion aura:id="accordion" allowMultipleSectionsOpen="true" activeSectionName="gipPkgSection">
+        <lightning:accordionSection name="gipPkgSection" label="{!$Label.cuco.gip_pkgs_section_title}">
+            <aura:if isTrue="{!v.showError}">
+                <div class="slds-box slds-box_x-small slds-m-top_medium slds-align_absolute-center">
+                    {!$Label.cuco.none_gip_pkgs}
+                </div>
+                <aura:set attribute="else">
+                    <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left">
+                        <div class="slds-grid slds-wrap backgroundHeader">
+                            <div class="slds-col slds-size_7-of-12 slds-p-vertical_x-small slds-p-left_x-large">
+                                {!$Label.cuco.gip_pkg_desc}
+                            </div>
+                            <div class="slds-col slds-size_3-of-12 slds-p-vertical_x-small">
+                                {!$Label.cuco.gip_pkg_status}
+                            </div>
+                            <div class="slds-col slds-size_2-of-12 slds-p-vertical_x-small">
+                                {!$Label.cuco.gip_pkg_endDate}
+                            </div>
+                        </div>
+                        <aura:iteration items="{!v.lstGipPkg}" var="gipPkg">
+                            <div class="slds-border_bottom">
+                                <cuco:gip_packages_detail_cmp gipPkg="{!gipPkg}" pkgPermissions="{!v.pkgPermissions}" recordId="{!v.recordId}" sObjectName="{!v.sObjectName}" />
+                            </div>
+                        </aura:iteration>
+                    </div>
+                </aura:set>
+            </aura:if>
+            <aura:if isTrue="{!and(v.canAddGipPkg, v.sObjectName == 'cuco__profitability_analysis__c')}">
+                <div class="slds-p-vertical_small">
+                    <lightning:button label="{!$Label.cuco.gip_add_package_button}" iconName="utility:add" iconPosition="left" onclick="{!c.handleAddGipPkg}"/>
+                </div>
+            {!v.body}
+            </aura:if>
+        </lightning:accordionSection>
+    </lightning:accordion>
+</aura:component>

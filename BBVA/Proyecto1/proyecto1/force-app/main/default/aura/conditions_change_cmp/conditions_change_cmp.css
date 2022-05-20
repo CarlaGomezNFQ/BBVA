@@ -1,0 +1,19 @@
+.THIS .table_title {
+  font-size: 0.8em;
+}
+
+.THIS .hide {
+  display: none;
+}
+
+.THIS .input_right_aligned input {
+  text-align: right;
+}
+
+.THIS .family-element > .slds-form-element__label {
+  font-weight: bold;
+}
+
+.THIS .slds-dropdown-trigger_click.slds-is-open .slds-dropdown {
+  height: 7.5rem;
+}

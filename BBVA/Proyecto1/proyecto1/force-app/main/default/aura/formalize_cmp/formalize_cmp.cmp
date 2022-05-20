@@ -1,0 +1,181 @@
+<aura:component implements="dwp_dbpn:DynamicFlowWizardStep_itf" extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="cuco.Formalize_Ctrl">
+
+    <!-- Modal attributes -->
+    <aura:attribute name="hide" type="Boolean" default="false" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="closeButton" type="Boolean" default="true" />
+    <aura:attribute name="hasHeader" type="Boolean" default="true" />
+    <aura:attribute name="modalSizeSLDS" type="String" default="slds-modal_small" />
+
+    <!-- Component attributes -->
+    <aura:attribute name="isSuccess" type="Boolean" default="false" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="customTitle" type="String" />
+    <aura:attribute name="typology" type="String" />
+    <aura:attribute name="formType" type="String" />
+    <aura:attribute name="isActivePrice" type="Boolean" />
+    <aura:attribute name="originEndDate" type="String" />
+    <aura:attribute name="originStartDate" type="Date" />
+    <aura:attribute name="endDate" type="Date" />
+    <aura:attribute name="endDateAudit" type="Date" />
+    <aura:attribute name="endDateFormat" type="String" />
+    <aura:attribute name="arceDate" type="Date" />
+    <aura:attribute name="profAnalysisStatus" type="String" />
+    <aura:attribute name="isNotPicassoFail" type="Boolean" default="false" />
+    <aura:attribute name="profAnalysisStartDate" type="String" />
+
+    <aura:attribute name="showComment" type="Boolean" />
+    <aura:attribute name="customMessage" type="String" />
+
+    <aura:attribute name="startDate" type="Date" />
+    <aura:attribute name="isNotCancellation" type="Boolean" default="false" />
+
+    <aura:attribute name="comments" type="String" />
+    <aura:attribute name="customDateTitle" type="String" />
+    <aura:attribute name="customDataTitleEnd" type="String" />
+    <aura:attribute name="tooltip" type="String" />
+    <aura:attribute name="customDate" type="String" />
+    <aura:attribute name="endNotEmpty" type="Boolean" default="true" />
+
+    <!-- Validations attributes -->
+    <aura:attribute name="labelValidate" type="String" />
+    <aura:attribute name="dateValidate" type="String"/>
+
+    <!-- ARCE expiration attributes -->
+    <aura:attribute name="warningExpiration" type="String" />
+    <aura:attribute name="hasArceDate" type="Boolean" default="false" />
+
+    <!-- Available actions -->
+    <aura:attribute name="source" type="String" />
+
+    <!-- Handler and title -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:set attribute="title" value="{!v.customTitle}" />
+
+    <div aura:id="loadSpinner">
+        <lightning:spinner aura:id="simpleSpinner" alternativeText="loading..." class="backOff" variant="brand" size="large" />
+    </div>
+    <aura:if isTrue="{!v.isSuccess}">
+        <div class="slds-modal__content slds-p-around_xx-large">
+            <div class="slds-grid slds-grid_vertical">
+                <!-- Comments -->
+                <aura:if isTrue="{!v.showComment}">
+                    <div class="slds-col">
+                        <lightning:textarea aura:id="comments" label="{!v.customMessage}" maxlength="1000" onchange="{!c.handleFormCommentsChange}" value="{!v.comments}"/>
+                    </div>
+                    <aura:set attribute="else">
+                        <div class="slds-col slds-form-element__label">
+                            <lightning:formattedText value="{!v.customMessage}" />
+                        </div>
+                    </aura:set>
+                </aura:if>
+
+                <!-- Dates -->
+                <div class="slds-col slds-p-top_medium">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size_1-of-2 slds-p-right_xx-large">
+                            <div class="slds-text-heading_xx-small">
+                                <div class="slds-form-element__label">{!v.customDateTitle}</div>
+                                <lightning:buttonIcon class="slds-p-left_xx-small slds-p-bottom_xx-small" variant="bare" iconName="utility:info" tooltip="{!v.tooltip}"/>
+                                <div class="slds-col" style="color:#433e3c;">
+                                    <lightning:formattedText style="color:#433e3c;" value="{!v.customDate}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-p-top_xx-small">
+                            <aura:if isTrue="{!v.isNotCancellation}">
+                                <aura:if isTrue="{!or(v.isActivePrice, v.isNotPicassoFail)}">
+                                    <div class="slds-text-heading_xx-small">
+                                        <lightning:formattedText value="{!v.customDataTitleEnd}" />
+                                    </div>
+                                    <div class="slds-text-heading_xx-small">
+                                        <lightning:formattedText style="color:#433e3c;" value="{!v.endDateFormat}" />
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <lightning:input aura:id="expiryDate" dateStyle="short" type="date" label="{!v.customDataTitleEnd}" value="{!v.endDate}" onchange="{!c.handleChangeDateFormalize}"/>
+                                    </aura:set>
+                                </aura:if>
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-col slds-p-top_large">
+                    <div class="slds-text-heading_xx-small">
+                        <lightning:formattedText value="{!v.labelValidate}" />
+                    </div>
+                    <div class="slds-text-heading_xx-small">
+                        <lightning:formattedText style="color:#433e3c;" value="{!v.dateValidate}" />
+                    </div>
+                </div>
+
+                <!-- ARCE -->
+                <aura:if isTrue="{!v.hasArceDate}">
+                    <div class="slds-col slds-p-top_medium">
+                        <div class="slds-text-heading_xx-small" style="color:#d2272b;">
+                            <lightning:icon variant="error" iconName="utility:warning" size="medium" alternativeText="Warning!"/> &nbsp;
+                            <lightning:formattedText label="{!$Label.cuco.arce_date_message}" value="{!v.warningExpiration}" />
+                        </div>
+                    </div>
+                </aura:if>
+            </div>
+        </div>
+        <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="{!$Label.cuco.cancel}" onclick="{!c.handleFormCancel}" class="slds-float_left"/>
+            <lightning:button variant="brand" label="{!$Label.cuco.continue}" onclick="{!c.checkValidity}"/>
+        </footer>
+    </aura:if>
+
+    <!-- Audit Details-->
+    <div class="slds-hide">
+        <aura:if isTrue="{!v.isSuccess}">
+            <div id="auditBody" >
+                <div class="slds-modal__content slds-p-around_xx-large" style="overflow: auto">
+                    <div class="slds-grid slds-grid_vertical">
+                        <div class="slds-col slds-p-top_medium">
+                            <div class="slds-text-heading_small">
+                                <div class="slds-form-element__label">{!v.customMessage}</div>
+                                <div class="slds-text-heading_xx-small">
+                                    {!v.comments}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-p-top_medium">
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-2 slds-p-right_xx-large">
+                                    <div class="slds-text-heading_xx-small">
+                                        <div class="slds-form-element__label">{!v.customDateTitle}</div>
+                                        <div class="slds-col" style="color:#433e3c;">
+                                            {!v.customDate}
+                                        </div>
+                                    </div>
+                                </div>
+                                <aura:if isTrue="{!v.isNotCancellation}">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-form-element__label">{!v.customDataTitleEnd}</div>
+                                        <div class="slds-col" style="color:#433e3c;">
+                                            {!v.endDateAudit}
+                                        </div>
+                                    </div>
+                                </aura:if>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-p-top_medium">
+                            <div class="slds-text-heading_xx-small">
+                                {!v.labelValidate}
+                            </div>
+                            <div class="slds-text-heading_xx-small" style="color:#433e3c;">
+                                {!v.dateValidate}
+                            </div>
+                        </div>
+                        <div class="slds-col slds-p-top_medium">
+                            <div class="slds-text-heading_xx-small" style="color:#d2272b;">
+                                {!v.warningExpiration}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+</aura:component>

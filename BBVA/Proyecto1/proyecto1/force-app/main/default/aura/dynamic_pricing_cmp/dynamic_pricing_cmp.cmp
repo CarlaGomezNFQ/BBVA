@@ -1,0 +1,87 @@
+<aura:component implements="flexipage:availableForRecordHome" access="global" controller="cuco.Dynamic_Pricing_Ctrl">
+    <aura:attribute name="wrapper" type="Object" access="global" />
+    <aura:attribute name="flatWrap" type="Object" />
+
+
+    <aura:attribute name="dpList" type="List" />
+    <aura:attribute name="boxes" type="List" />
+    <aura:attribute name="table" type="List" />
+    <aura:attribute name="showSection" type="Boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="change" value="{!v.wrapper}" action="{!c.doInit}"/>
+
+    <lightning:accordion aura:id="accordion" allowMultipleSectionsOpen="true" activeSectionName="dynamicPricingSection">
+        <lightning:accordionSection name="dynamicPricingSection" label="{!$Label.cuco.dp_section_title}">
+            <aura:if isTrue="{!v.showSection}">
+                <div aura:id="container" class="slds-scrollable">
+                    <div>
+                      <aura:iteration items="{!v.flatWrap.crossDPAttList}" var="cat">
+                        <div class="slds-float_left slds-m-left_medium slds-m-right_medium slds-m-bottom_medium slds-box">
+                          {!cat.name}<br />
+                          <aura:if isTrue="{!cat.isDecimal}">
+                              <lightning:formattedNumber value="{!cat.value}" style="decimal" minimumFractionDigits="{!cat.decimalValue}"/>
+                              <aura:set attribute="else">
+                                {!cat.value}
+                              </aura:set>
+                          </aura:if>
+                        </div>
+                      </aura:iteration>
+                    </div>
+                    <div class="slds-p-around_medium">
+                      <table class="slds-table">
+                        <thead>
+                          <tr>
+                            <th>{!$Label.cuco.dp_name}</th>
+                            <aura:iteration items="{!v.flatWrap.nonCrossDPTable.headersList}" var="item">
+                              <th>{!item}</th>
+                            </aura:iteration>
+                          </tr>
+                        </thead>
+                        <aura:iteration items="{!v.flatWrap.nonCrossDPTable.classificationsList}" var="item" indexVar="itemIndex">
+                          <tr class="special slds-text-title_bold border_bottom slds-hint-parent">
+                            <td>
+                              <div>
+                                <lightning:buttonIcon variant="bare" value="{!itemIndex}" onclick="{!c.toggle}"
+                                  iconName="{!item.expanded ?'utility:chevrondown':'utility:chevronright'}"
+                                  class="noShadow slds-m-right_xxx-small" />
+                                {!item.name}
+                              </div>
+                            </td>
+                            <aura:iteration items="{!v.flatWrap.nonCrossDPTable.headersList}" var="item">
+                              <td></td>
+                            </aura:iteration>
+                          </tr>
+                          <aura:if isTrue="{!item.expanded}">
+                            <aura:iteration items="{!item.nonCrossDPList}" var="child">
+                              <tr>
+                                <aura:iteration items="{!child.attValuesList}" var="att" indexVar="i">
+                                  <aura:if isTrue="{!i eq 0}">
+                                    <td class="childName">
+                                      {!att.name}
+                                    </td>
+                                  </aura:if>
+                                  <aura:if isTrue="{!att.isDecimal}">
+                                    <td>
+                                      <lightning:formattedNumber value="{!att.value}" style="decimal" minimumFractionDigits="{!att.decimalValue}"/>
+                                    </td>
+                                    <aura:set attribute="else">
+                                      <td>
+                                        {!att.value}
+                                      </td>
+                                    </aura:set>
+                                  </aura:if>
+                                </aura:iteration>
+                              </tr>
+                            </aura:iteration>
+                          </aura:if>
+                        </aura:iteration>
+                      </table>
+                    </div>
+                </div>
+                <aura:set attribute="else">
+                    <div aura:id="noInfo" class="slds-box slds-m-horizontal_x-large slds-m-bottom_medium">{!$Label.cuco.dp_no_information}</div>
+                </aura:set>
+            </aura:if>
+        </lightning:accordionSection>
+    </lightning:accordion>
+</aura:component>

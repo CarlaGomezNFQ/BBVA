@@ -1,0 +1,72 @@
+<!--
+@Component Name     : Arc_Gen_RAIP_FinalizePrerating_Btn.cmp
+@Description        : Modal to finalize a RAIP of prerating type.
+@Author             : ARCE Team
+@Group              : ARCE
+@Last Modified By   : joseluis.garcia4.contractor@bbva.com
+@Last Modified On   : 07/05/2020
+@Modification Log   :
+==============================================================================
+Ver         Date                     Author      		      	   Modification
+==============================================================================
+1.0    07/05/2020       joseluis.garcia4.contractor@bbva.com       Initial Version
+1.1    18/05/2020       joseluis.garcia4.contractor@bbva.com       Fixes tabset not being refreshed after finalizing.
+-->
+<aura:component implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" controller="Arc_Gen_RatingAsIndepProcess_controller" access="global" >
+    <!-- Attribute declarations. -->
+    <aura:attribute name="hasRecordId" type="String" default="{!v.recordId}" description="Standard id of the current record" access="global"/>
+    <aura:attribute name="loading" type="Boolean" default="false" description="Determines whether the spinner is displayed." />
+    <aura:attribute name="errorMessage" type="String" default="" description="Error message from Apex code." />
+
+    <!-- Event handlers. -->
+    <aura:handler name="init" value="{!this}" action="{!c.fetchIdFromUrl}" />
+
+    <!-- Component body. -->
+    <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <!-- DIALOG HEADER. -->
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close"
+                                      onclick="{!c.handleCancel}"
+                                      alternativeText="close"
+                                      variant="bare-inverse"
+                                      disabled="{!v.loading}"
+                                      class="slds-modal__close"/>
+                <h4 class="title slds-text-heading--medium" >{!$Label.c.Arc_Gen_FinalizePreratingDialogTitle}</h4>
+            </header>
+
+            <!-- DIALOG CONTENT.-->
+            <div class="slds-modal__content slds-is-relative">
+                <!-- Error message. -->
+                <aura:if isTrue="{!v.errorMessage != ''}">
+                    <div class="slds-box slds-box_small slds-theme_error">
+                        {!v.errorMessage}
+                    </div>
+                </aura:if>
+
+                <!-- Main content. -->
+                <div class="slds-p-vertical_x-large slds-p-horizontal_medium">
+                    <!-- Step 1. Confirmation -->
+                    <aura:if isTrue="{!!v.loading}">
+                        <p class="slds-align_absolute-center">{!$Label.c.Arc_Gen_FinalizePreratingConfirmation}</p>
+                    </aura:if>
+
+                    <aura:if isTrue="{!v.loading}">
+                        <div class="slds-p-vertical_large">
+                            <lightning:spinner alternativeText="Loading..." />
+                        </div>
+                    </aura:if>
+                </div>
+            </div>
+
+            <!-- DIALOG FOOTER. Only displayed in confirmation step to host 'Confirm' and 'Cancel' buttons -->
+            <aura:if isTrue="{!!v.loading}">
+                <div class="slds-modal__footer slds-modal__footer_directional">
+                    <lightning:button label="{!$Label.c.Arc_Gen_FinalizePreratingCancel}" onclick="{!c.handleCancel}"></lightning:button>
+                    <lightning:button variant="brand" label="{!$Label.c.Arc_Gen_FinalizePreratingConfirm}" onclick="{!c.handleConfirm}"></lightning:button>
+                </div>
+            </aura:if>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

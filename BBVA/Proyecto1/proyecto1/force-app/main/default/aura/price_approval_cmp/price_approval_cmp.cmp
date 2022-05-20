@@ -1,0 +1,252 @@
+<aura:component access="global" implements="dwp_dbpn:DynamicFlowWizardStep_itf" extends="dwp_mdal:ModalTemplate_cmp"  controller="cuco.Price_approval_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="dcsi:Selected_Decision_evt" action="{!c.handleClick}"/>
+
+    <aura:attribute name="conditionList" type="Object[]" />
+    <aura:attribute name="isAtributions" type="Boolean" />
+    <aura:attribute name="comments" type="String" />
+    <aura:attribute name="originEndDate" type="String" />
+    <aura:attribute name="proposedEndDate" type="String" />
+    <aura:attribute name="proposedEndDateAudit" type="String" />
+    <aura:attribute name="dateArce" type="String" />
+    <aura:attribute name="originStartDate" type="String" />
+    <aura:attribute name="modalSizeSLDS" type="String" default="slds-modal_small"/>
+    <aura:attribute name="activeSections" type="List" default="['0']" />
+    <aura:attribute name="mode" type="String" />
+    <aura:attribute access="global" name="decisionInputJSONSetup" type="String" />
+    <aura:attribute name="decisionInputId" type="String" />
+    <aura:attribute name="maxPerRow" type="String" />
+    <aura:attribute name="selectedDecisionId" type="String" />
+    <aura:attribute name="isDecisionSelected" type="Boolean" />
+    <aura:attribute name="decisionChosen" type="String" />
+    <aura:attribute name="isLoaded" type="Boolean" />
+    <aura:attribute name="typology" type="String" />
+    <aura:attribute name="isSuccess" type="Boolean" default="false" />
+    <aura:attribute name="decisionLabel" type="String" />
+    <aura:attribute name="listDecisions" type="Object[]" />
+    <aura:attribute name="isRenewal" type="Boolean" default="false" />
+    <aura:attribute name="lstExceptions" type="List" />
+
+    <div class="slds-modal__content slds-p-around_medium">
+
+        <div aura:id="loadSpinner">
+            <lightning:spinner aura:id="simpleSpinner" alternativeText="loading..." style="background:none;" variant="brand" size="large" />
+        </div>
+        <aura:if isTrue="{!v.isSuccess}">
+            <div aura:id="container" class="slds-hide">
+                <!-- Conditions and exception table -->
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-1 slds-m-left_small">
+                        <aura:if isTrue="{!v.isAtributions}">
+                            <div class="slds-text-heading_small" style="color:#433e3c;">{!$Label.cuco.price_delegation_message}</div>
+                            <aura:set attribute="else">
+                                <!-- Conditions table -->
+                                <div class="slds-text-heading_small" style="color:#433e3c;">{!$Label.cuco.price_review_message}</div><br/>
+                                <table class="slds-table">
+                                    <lightning:accordion allowMultipleSectionsOpen="true" onsectiontoggle="{!c.handleSectionToggle}" activeSectionName="0A" class="slds-m-right_medium">
+                                        <aura:iteration items="{!v.conditionList}" var="family" indexVar="i">
+                                        <lightning:accordionSection class="accordion" name="{!i + 'A'}" label="{!family.family}">
+                                            <aura:set attribute="body">
+                                                <thead>
+                                                    <tr class="slds-box slds-box_small slds-line-height_reset">
+                                                        <th scope="col">
+                                                            <div class="slds-truncate" title="{!$Label.cuco.price_condition}">{!$Label.cuco.price_condition}</div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div class="slds-truncate" title="{!$Label.cuco.price_delegated_value}">{!$Label.cuco.price_delegated_value}</div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div class="slds-truncate" title="{!$Label.cuco.price_proposed_value}">{!$Label.cuco.price_proposed_value}</div>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <aura:iteration items="{!family.conditionList}" var="condition" indexVar="i">
+                                                    <tbody>
+                                                        <tr class="slds-box slds-box_small">
+                                                            <td class="slds-size_1-of-3">
+                                                                {!condition.condition}
+                                                            </td>
+                                                            <td class="slds-size_1-of-3 ap_Decimal">
+                                                                {!condition.delegated}
+                                                            </td>
+                                                            <td class="slds-size_1-of-3 ap_Decimal">
+                                                                {!condition.proposed}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </aura:iteration>
+                                            </aura:set>
+                                        </lightning:accordionSection>
+                                        </aura:iteration>
+                                        <!-- Exception table -->
+                                        <aura:if isTrue="{!not(empty(v.lstExceptions))}">
+                                            <lightning:accordionSection class="accordion" name="exceptionsSection" label="{!$Label.cuco.price_exceptions}">
+                                                <div class="slds-box">
+                                                    <tbody>
+                                                        <ul class="slds-list_dotted">
+                                                        <aura:iteration items="{!v.lstExceptions}" var="exception">
+                                                            <li>{!exception.name}</li>
+                                                        </aura:iteration>
+                                                        </ul>
+                                                    </tbody>
+                                                </div>
+                                            </lightning:accordionSection>
+                                        </aura:if>
+                                    </lightning:accordion>
+                                </table>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </div>
+
+                <div class="slds-grid slds-p-around_small">
+                    <!-- Comments field -->
+                    <div class="slds-col slds-size_2-of-4 slds-p-around_small slds-m-top_small">
+                        <lightning:textArea aura:id="inputComments" required="true" name="newComments" label="{!$Label.cuco.price_decision_comments}" maxlength="1000" value="{!v.comments}"/>
+                    </div>
+                    <div class="slds-col slds-size_2-of-4 slds-p-around_small slds-m-top_medium">
+                        <!-- Decision buttons -->
+                        <aura:if isTrue="{!v.isLoaded}">
+                            <div class="slds-text-align_center">
+                                <dcsi:Decision_Input_cmp decisionInputJSONSetup="{!v.decisionInputJSONSetup}" decisionInputId="1" mode="input" maxPerRow="{!v.maxPerRow}" selectedDecisionId="{!v.selectedDecisionId}"/>
+                            </div>
+                        </aura:if>
+                    </div>
+                </div>
+
+                <div class="slds-grid slds-p-around_small">
+                    <!-- End date field -->
+                    <div class="slds-col slds-size_1-of-3 slds-p-left_small slds-p-right_small">
+                        <lightning:input class="slds-datepicker" aura:id="endDateId" type="date" dateStyle="short" name="fechaVencimiento" required="true" label="{!$Label.cuco.price_expiry_date}" value="{!v.proposedEndDate}" onchange="{!c.handleChangeDate}"/>
+                    </div>
+                    <!-- Price validity dates -->
+                    <div>
+                        <aura:if isTrue="{!v.isRenewal}">
+                            <div class="slds-col slds-size_2-of-2 slds-p-left_medium slds-p-right_small slds-m-top_medium">
+                                <lightning:formattedText style="color:#433e3c;" label="{!$Label.cuco.price_validity_dates}" value="{!$Label.cuco.price_validity_dates}" /> <br/>
+                                <lightning:formattedText style="color:#433e3c;" label="{!$Label.cuco.price_validity_dates}" value="{!v.originStartDate}" />
+                            </div>
+                        </aura:if>
+                    </div>
+                </div>
+
+                <aura:if isTrue="{!v.dateArce != ''}">
+                    <!-- Arce date -->
+                    <div class="slds-grid slds-p-around_small">
+                        <div class="slds-col slds-size_1-of-1 slds-p-left_small slds-p-right_small slds-p-bottom_large">
+                            <lightning:icon iconName="utility:warning" variant="error" size="medium" title="Warning" /> &nbsp;
+                            <lightning:formattedText style="color:#d2272b;" label="{!$Label.cuco.arce_date_message}" value="{!v.dateArce}" />
+                        </div>
+                    </div>
+                </aura:if>
+            </div>
+        </aura:if>
+    </div>
+
+    <footer class="slds-modal__footer">
+        <!-- Save and cancel buttons -->
+        <button class="slds-button slds-button_neutral" onclick="{!c.cancelButton}">{!$Label.cuco.cancel}</button>
+        <aura:if isTrue="{!v.isDecisionSelected}">
+            <button class="slds-button slds-button_brand" onclick="{!c.validateFields}">{!$Label.cuco.save}</button>
+        </aura:if>
+    </footer>
+
+    <!-- Audit Details-->
+    <div class="slds-hide">
+        <div id="auditBody">
+            <div class="slds-grid slds-modal__content slds-theme_default">
+                <div class="slds-col slds-size_1-of-1 slds-p-left_small slds-p-top_small">
+                    <aura:if isTrue="{!v.isAtributions}">
+                        <div class="slds-text-heading_small" style="color:#433e3c;">{!$Label.cuco.price_delegation_message}</div>
+                        <aura:set attribute="else">
+                            <!-- Conditions table -->
+                            <div class="slds-text-heading_small" style="color:#433e3c;">{!$Label.cuco.price_review_message}</div><br/>
+                            <table class="slds-table">
+                                <aura:iteration items="{!v.conditionList}" var="family" indexVar="i">
+                                    <thead>
+                                        <tr class="slds-box slds-box_small slds-line-height_reset">
+                                            <th scope="col"><span class="slds-text-heading_small">{!family.family}</span></th>
+                                            <th scope="col"><span class="slds-text-heading_small">{!$Label.cuco.price_delegated_value}</span></th>
+                                            <th scope="col"><span class="slds-text-heading_small">{!$Label.cuco.price_proposed_value}</span></th>
+                                        </tr>
+                                    </thead>
+                                    <aura:iteration items="{!family.conditionList}" var="condition" indexVar="i">
+                                        <tbody>
+                                            <tr class="slds-box slds-box_small">
+                                                <td class="slds-size_1-of-3">
+                                                    {!condition.condition}
+                                                </td>
+                                                <td class="slds-size_1-of-3 ap_Decimal">
+                                                    {!condition.delegated}
+                                                </td>
+                                                <td class="slds-size_1-of-3 ap_Decimal">
+                                                    {!condition.proposed}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </aura:iteration>
+                                </aura:iteration>
+                            </table>
+                            <!-- Exception table -->
+                            <aura:if isTrue="{!not(empty(v.lstExceptions))}">
+                                <div class="slds-p-top_medium">
+                                    <table class="slds-table">
+                                        <thead>
+                                            <tr class="slds-box slds-box_small slds-line-height_reset">
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="{!$Label.cuco.price_exceptions}"><span class="slds-text-heading_small">{!$Label.cuco.price_exceptions}</span></div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.lstExceptions}" var="exception">
+                                                <tr class="slds-box slds-box_small">
+                                                    <td class="slds-size_1-of-1">{!exception.name}</td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </aura:if>
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </div>
+
+            <div class="slds-grid slds-p-around_small slds-theme_default">
+                <!-- Comments field -->
+                <div class="slds-col slds-size_2-of-4 slds-p-around_small slds-m-top_small">
+                    <label class="slds-form-element__label" for="outSignDate">{!$Label.cuco.price_decision_comments}</label>
+                    <span >{!v.comments}</span>
+                </div>
+            </div>
+            <div class="slds-grid slds-theme_default slds-p-around_small">
+                <!-- End date field -->
+                <div class="slds-col slds-size_1-of-3 slds-p-left_small slds-p-right_small">
+                    <label class="slds-form-element__label">{!$Label.cuco.price_expiry_date}</label>
+                    <span>{!v.proposedEndDateAudit}</span>
+                </div>
+                <!-- Price validity dates -->
+                <div>
+                    <aura:if isTrue="{!v.isRenewal}">
+                        <div class="slds-col slds-size_2-of-2 slds-p-left_medium slds-p-right_small">
+                            <label class="slds-form-element__label" for="outSignDate">{!$Label.cuco.price_validity_dates}</label>
+                            <span style="color:#433e3c;">{!v.originStartDate}</span>
+                        </div>
+                    </aura:if>
+                </div>
+            </div>
+
+            <aura:if isTrue="{!v.dateArce != ''}">
+                <!-- Arce date -->
+                <div class="slds-grid slds-theme_default slds-p-around_small">
+                    <div class="slds-col slds-size_1-of-1 slds-p-left_small slds-p-right_small slds-p-bottom_large">
+                        <span style="color:#d2272b;">{!v.dateArce}</span>
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    </div>
+
+</aura:component>

@@ -1,0 +1,87 @@
+<aura:component access="global" controller="cuco.CommPackagesDetail_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:attribute name="commPkg" type="Object"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="sObjectName" type="String"/>
+    <aura:attribute name="pkgPermissions" type="Object" />
+    <aura:attribute name="canEditCommPkg" type="Boolean" default="false"/>
+
+    <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size_3-of-12 slds-p-vertical_x-small slds-text-title_bold">
+            <lightning:buttonIcon class="slds-p-horizontal_x-small" iconName="utility:chevrondown" variant="bare" aura:id="commPkgIconCollapsible" onclick="{!c.handleCommClickCollapsibleIcon}"/>
+            <lightning:formattedText value="{!v.commPkg.code}" />
+        </div>
+        <div class="slds-col slds-size_4-of-12 slds-p-vertical_x-small slds-text-title_bold">
+            <lightning:formattedText value="{!v.commPkg.description}" />
+        </div>
+        <div class="slds-col slds-size_3-of-12 slds-p-vertical_x-small">
+            <lightning:formattedText    class="{!v.commPkg.status.id == 'Cancelled' ? 'slds-text-title_bold slds-text-title_caps redIcon' : 'slds-text-title_bold'}"
+                                        value="{!and(v.commPkg.requestStatus != null, v.commPkg.status.value != null)
+                                                ? v.commPkg.status.value + ' - ' + v.commPkg.requestStatus.value
+                                                : (v.commPkg.requestStatus == null ? v.commPkg.status.value : v.commPkg.requestStatus.value)}" />
+        </div>
+        <div class="slds-col slds-size_2-of-12 slds-p-vertical_x-small slds-text-title_bold">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_10-of-12">
+                    <lightning:formattedDateTime value="{!v.commPkg.endDate}" year="numeric" month="2-digit" day="2-digit"/>
+                </div>
+                <div class="slds-col slds-size_2-of-12">
+                    <div class="slds-align_absolute-center">
+                        <aura:if isTrue="{!v.canEditCommPkg}">
+                            <lightning:buttonIcon iconName="utility:edit" variant="bare" onclick="{!c.handleEditClick}" alternativeText="{!$Label.cuco.alternative_text_edit}" class="blueIcon" />
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slds-col" aura:id="commPkgDetails">
+            <div class="slds-grid slds-grid_vertical">
+                <aura:if isTrue="{!v.commPkg.isExtended}">
+                    <div class="slds-col slds-p-left_x-large">
+                        <lightning:button iconName="utility:record" variant="bare" class="{!v.commPkg.status.id == 'Cancelled' ? 'redIcon' : 'blueIcon'}"/>
+                        <span class="slds-text-title_bold">{!$Label.cuco.comm_pkg_extended}</span>
+                    </div>
+                </aura:if>
+                <div class="slds-col">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size_1-of-2 slds-p-left_x-large">
+                            <div class="slds-form-element__label">
+                                {!$Label.cuco.comm_pkg_participant}
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element__label">
+                                {!$Label.cuco.comm_pkg_operationType}
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-p-left_x-large slds-p-bottom_medium">
+                            <lightning:formattedText value="{!v.commPkg.participant.name}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-p-bottom_medium">
+                            <lightning:formattedText value="{!v.commPkg.operationType}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-p-left_x-large">
+                            <div class="slds-form-element__label">
+                                {!$Label.cuco.comm_pkg_scope}
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element__label">
+                                {!$Label.cuco.comm_pkg_operationalLimit}
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-p-left_x-large slds-p-bottom_medium">
+                            <lightning:formattedText value="{!v.commPkg.scope.value}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-p-bottom_medium">
+                            <lightning:formattedText value="{!v.commPkg.operationalLimit}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {!v.body}
+</aura:component>

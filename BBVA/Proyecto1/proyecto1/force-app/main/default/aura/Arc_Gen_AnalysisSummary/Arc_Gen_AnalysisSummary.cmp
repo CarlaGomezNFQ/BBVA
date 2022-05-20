@@ -1,0 +1,42 @@
+<aura:component controller = "arce.Arc_Gen_AnalysisSummary_Controller" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+  <aura:attribute name="geographiesChart" type="Map" description="JSON for geographies chart"/>
+  <aura:attribute name="subActivityChart" type="Map" description="JSON for subactivities chart"/>
+  <aura:attribute name="loadedgeographiesChart" type="Boolean" default="false" description="Show/hide geographies chart"/>
+  <aura:attribute name="loadedsubActivityChart" type="Boolean" default="false" description="Show/hide subactivities chart"/>
+  <aura:attribute name="summaryComments" type="String" description="Summary comments"/>
+  <aura:attribute name="accountHasAnalysis" type="Object"/>
+  <aura:attribute name="recordLoadError" type="String"/>
+  <aura:attribute name="modelSelctd" type="String"/>
+
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" description="Init variable"/>
+
+  <force:recordData aura:id="aHaRecordData"
+    recordId="{!v.recordId}"
+    fields="Id,arce__competition_sector_desc__c"
+    targetFields="{!v.accountHasAnalysis}"
+    targetError="{!v.recordLoadError}"
+    mode="EDIT"
+    />
+  <div class="slds-grid slds-wrap slds-align_absolute-center">
+      <div class="slds-col slds-size_1-of-2">
+        <aura:if isTrue="{!v.loadedsubActivityChart}">
+          <chgn:Chart_Generator JSON_Chart = "{!v.subActivityChart}" canvasId = "subActivityChart"/>
+        </aura:if>
+      </div>
+      <div class="slds-col slds-size_1-of-2">
+        <aura:if isTrue="{!v.loadedgeographiesChart}">
+          <chgn:Chart_Generator JSON_Chart = "{!v.geographiesChart}" canvasId = "geographiesChart"/>
+        </aura:if>
+      </div>
+      <div class="slds-col slds-size_1-of-1 slds-align_absolute-center">
+          <lightning:textarea value="{!v.accountHasAnalysis.arce__competition_sector_desc__c}" maxlength="1000" label="{!$Label.arce.Arc_Gen_Business_Risk_Assessment}" style="width:70%;"/>
+          <lightning:buttonIcon aura:id="saveEntry"
+                                                    iconName="utility:save"
+                                                    alternativeText="Save"
+                                                    size="large"
+                                                    variant="bare"
+                                                    onclick="{!c.actionSave}"
+                                                    tooltip="Save" />
+      </div>
+  </div>
+</aura:component>

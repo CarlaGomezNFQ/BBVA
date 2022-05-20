@@ -1,0 +1,15 @@
+.THIS .noPaddingLeft {
+  padding-left: 0 !important;
+}
+
+.THIS .noPaddingRight {
+  padding-right: 0 !important;
+}
+
+.THIS {
+  font-size: 10px;
+}
+
+.THIS .textWhiteSpace {
+  white-space: normal !important;
+}

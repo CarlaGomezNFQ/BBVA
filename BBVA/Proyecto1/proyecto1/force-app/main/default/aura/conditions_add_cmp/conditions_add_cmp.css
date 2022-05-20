@@ -1,0 +1,16 @@
+.THIS .sticky {
+  justify-content: left;
+  padding-left: 15px;
+}
+
+.THIS .float-left {
+  float: left;
+}
+
+.THIS .top {
+  top: 1rem;
+}
+
+.THIS .slds-modal__content {
+  min-height: 50%;
+}

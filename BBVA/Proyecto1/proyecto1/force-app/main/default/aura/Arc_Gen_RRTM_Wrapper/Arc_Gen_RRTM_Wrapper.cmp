@@ -1,0 +1,49 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSobjectName" access="global">
+  <aura:attribute name="recordId" type="String" access="global" description="Record id of the entry" />
+  <aura:attribute name="fieldsApiName" type="String" access="global" description="API Name list split by comma" />
+  <aura:attribute name="relatedName" type="String" access="global" description="Name of the relation with the object" />
+  <aura:attribute name="sObjectType" type="String" access="global" description="Type of sObject searched" />
+  <aura:attribute name="recordTypeName" type="String" access="global" description="Developer name of the record type" />
+  <aura:attribute name="filterTable" type="String" access="global" description="Filter in the table" />
+  <aura:attribute name="customMetadata" type="String" access="global" description="Configuration metadata of the seeker" />
+  <aura:attribute name="apexClassSave" type="String" access="global" description="Apex Class after of the saved" />
+  <aura:attribute name="hideResetButton" access="global" type="Boolean" description="Whether or not to hide the 'Reset' button" />
+  <aura:attribute name="highlightEdits" access="global" type="Boolean" default="false" description="Whether or not to show changes before saving" />
+  <aura:attribute name="defaultValues" access="global" type="String" default="{}" description="Field values to be saved as default for the records" />
+  <aura:attribute name="showFooter" access="global" type="Boolean" description="Whether or not to show the footer" default = "true"/>
+  <aura:attribute name="headerText" access="global" type="String" description="Header to show"/>
+  <aura:attribute name="fieldSeeker" type="String" access="global" description="Name field of the seeker" />
+  <aura:attribute name="readOnly" type="Boolean" access="global" default="false" description="Mode of read only" />
+  <aura:attribute name="headerLabels" type="String" access="global" description="Labels to include in headers. Fill only when you want to overwrite standard." />
+  <aura:attribute name="uniqueNameEvt" type="String" access="global" description="Name of the saveAllComplete event" />
+  <aura:attribute name="infoMsgBar" type="Boolean" access="global" default="false" description="Visibility section message bar" />
+  <aura:attribute name="messageBar" type="String" access="global" description="Message attribute messageBar component" />
+  <aura:attribute name="styleMsgBar" type="String" access="global" default="slds-theme_warning" description="Style of messageBar component" />
+  <aura:attribute name="hrefMsgBar" type="String" access="global" description="Href attribute of messageBar component" />
+  <aura:attribute name="iconNameMsgBar" type="String" access="global" default="utility:notification" description="Icon message bar component" />
+
+  <aura:handler name="SaveAllComplete" event="rrtm:saveAllComplete_evt" action="{!c.saveAllComplete}"/>
+  <aura:registerEvent name="SaveAllCompleteRRTM" type="arce:Arc_Gen_RRTM_Wrapper_evt"/>
+
+  <mbr:messageBar forceDisplay="{!v.infoMsgBar}" message="{!v.messageBar}" href="{!v.hrefMsgBar}"  style="{!v.styleMsgBar}" iconName="{!v.iconNameMsgBar}" />
+
+  <rrtm:RelatedRecordTableManager aura:id="rrtm"
+                                  recordId="{!v.recordId}"
+                                  fieldsApiName="{!v.fieldsApiName}"
+                                  relatedName="{!v.relatedName}"
+                                  sObjectType="{!v.sObjectType}"
+                                  recordTypeName="{!v.recordTypeName}"
+                                  filterTable="{!v.filterTable}"
+                                  customMetadata="{!v.customMetadata}"
+                                  apexClassSave="{!v.apexClassSave}"
+                                  hideResetButton="{!v.hideResetButton}"
+                                  highlightEdits="{!v.highlightEdits}"
+                                  defaultValues="{!v.defaultValues}"
+                                  showFooter="{!v.showFooter}"
+                                  headerText="{!v.headerText}"
+                                  fieldSeeker="{!v.fieldSeeker}"
+                                  readOnly="{!v.readOnly}"
+                                  headerLabels="{!v.headerLabels}"
+                                  />
+
+</aura:component>

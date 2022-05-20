@@ -1,0 +1,113 @@
+<aura:component extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="cuco.Participants_Remove_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:registerEvent name="refresh_participants_evt" type="cuco:refresh_participants_evt"/>
+    <aura:registerEvent name="refresh_comm_packages_evt" type="cuco:refresh_comm_packages_evt"/>
+    <aura:registerEvent name="refresh_forfait_packages_evt" type="cuco:refresh_forfait_packages_evt"/>
+    <aura:registerEvent name="refresh_gip_packages_evt" type="cuco:refresh_gip_packages_evt"/>
+    <aura:registerEvent name="refresh_conditions_evt" type="cuco:refresh_conditions_evt"/>
+    <aura:registerEvent name="refresh_flat_rates_evt" type="cuco:refresh_flat_rates_evt"/>
+
+    <!-- Modal attributes -->
+    <aura:attribute name="hide" type="Boolean"  default="false" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="closeButton" type="Boolean"  default="true" />
+    <aura:attribute name="hasHeader" type="Boolean"  default="true" />
+    <aura:attribute name="modalSizeSLDS" type="String" default="slds-modal_small" />
+
+    <!-- Radio button group attributes -->
+    <aura:attribute name="optionRadioButton" type="List" />
+    <aura:attribute name="labelRadioButton" type="String" />
+    <aura:attribute name="valueRadioButton" type="String" />
+
+    <!-- LC attributes -->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="stage" type="Integer" />
+    <aura:attribute name="papName" type="String" />
+    <aura:attribute name="profAnalysisId" type="Id" />
+    <aura:attribute name="firstStageAction" type="String" />
+    <aura:attribute name="hasReqPkg" type="Boolean" default="false" />
+    <aura:attribute name="hasExtPkg" type="Boolean" default="false" />
+    <aura:attribute name="extPkgName" type="String" />
+    <aura:attribute name="hasDisableButton" type="Boolean" default="true" />
+
+    <aura:attribute name="participantsRemoveBannerMsg" type="String" />
+
+    <div aura:id="loadSpinner">
+      <lightning:spinner aura:id="simpleSpinner" alternativeText="loading..." class="backOff" variant="brand" size="large" />
+    </div>
+    <div class="slds-modal__content">
+        <aura:if isTrue="{!v.stage == 1}">
+            <div class="slds-align_absolute-center slds-p-around_xx-large slds-text-heading_small">
+                <lightning:radioGroup name="radioGroup"
+                          label="{!v.labelRadioButton}"
+                          options="{!v.optionRadioButton}"
+                          value="{!v.value}"
+                          onchange="{!c.handleRadioButtonChange}"
+                          type="radio"/>
+            </div>
+        </aura:if>
+        <aura:if isTrue="{!v.stage == 2}">
+            <div class="slds-m-horizontal_xx-large slds-m-vertical_large">
+                <aura:if isTrue="{!v.hasExtPkg}">
+                    <div class="slds-m-bottom_large">
+                        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                            <span class="slds-icon_container slds-icon-utility-error slds-m-horizontal_small slds-no-flex slds-align-top" title="Description of icon when needed">
+                                <lightning:buttonIcon iconName="utility:warning" variant="bare" disabled="true" class="slds-input__icon slds-input__icon_left" />
+                            </span>
+                            <div class="slds-notify__content">
+                                <h2 class="slds-text-heading_small slds-text-align_left">{!v.papName}&nbsp;{!$Label.cuco.has_extended_pkg}</h2>
+                                <p>{!$Label.cuco.extended_pkg}&nbsp;{!v.extPkgName}</p>
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+                <aura:if isTrue="{!v.hasExtPkg}">
+                    <div class="slds-text-title_bold slds-text-heading_small slds-m-bottom_large">
+                        {!$Label.cuco.remove_confirmation_pkg_pre}&nbsp;{!v.papName}&nbsp;{!$Label.cuco.remove_confirmation_post}
+                    </div>
+                    <aura:set attribute="else">
+                        <div class="slds-text-title_bold slds-text-heading_small slds-m-bottom_large">
+                            {!$Label.cuco.remove_confirmation_pre}&nbsp;{!v.papName}&nbsp;{!$Label.cuco.remove_confirmation_post}
+                        </div>
+                    </aura:set>
+                </aura:if>
+                <div class="slds-p-horizontal_x-large">
+                    <div class="slds-grid slds-grid_vertical">
+                        <div class="slds-m-bottom_large">
+                            <div class="slds-col">
+                                {!$Label.cuco.remove_warning_title}
+                            </div>
+                            <div class="slds-col">
+                                <li>{!$Label.cuco.remove_warning_standard}</li>
+                            </div>
+                            <aura:if isTrue="{!v.firstStageAction == 'permanently'}">
+                                <div class="slds-col">
+                                    <li>{!$Label.cuco.remove_warning_pkg_cancel}</li>
+                                </div>
+                            </aura:if>
+                            <aura:if isTrue="{!v.hasReqPkg}">
+                                <div class="slds-col">
+                                    <li>{!$Label.cuco.remove_warning_pkg_new}</li>
+                                </div>
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+                <aura:if isTrue="{!v.firstStageAction == 'temporarily'}">
+                    {!$Label.cuco.keep_pkg_warning}
+                </aura:if>
+            </div>
+        </aura:if>
+    </div>
+    <footer class="slds-modal__footer">
+        <lightning:button class="slds-float_left" variant="neutral" label="{!$Label.cuco.cancel}" onclick="{!c.handleCancel}"  />
+        <aura:if isTrue="{!v.stage == 1}">
+            <lightning:button variant="brand" label="{!$Label.cuco.continue}" onclick="{!c.handleContinue}" disabled="{!v.hasDisableButton}" />
+        </aura:if>
+        <aura:if isTrue="{!v.stage == 2}">
+            <lightning:button variant="brand" label="{!v.hasExtPkg == true ? $Label.cuco.remove_ext_and_participant : $Label.cuco.remove_participant}" onclick="{!c.handleDelete}" />
+        </aura:if>
+    </footer>
+</aura:component>

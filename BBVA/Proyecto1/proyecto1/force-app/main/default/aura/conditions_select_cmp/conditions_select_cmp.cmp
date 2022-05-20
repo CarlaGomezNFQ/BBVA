@@ -1,0 +1,97 @@
+<aura:component implements="force:hasRecordId" extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="cuco.ConditionsSelect_Ctrl">
+
+  <aura:registerEvent name="conditionsSelectContinueEvt" type="cuco:conditions_select_continue_evt"/>
+
+  <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+  <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+  <aura:handler event="force:refreshView" action="{!c.doInit}" />
+
+  <aura:attribute name="paConditions" type="Object" />
+  <aura:attribute name="conditions" type="Object" />
+  <aura:attribute name="activeSections" type="List" default="[]" />
+  <aura:attribute name="waiting" type="Boolean" default="false"/>
+  <aura:attribute name="viewMode" type="String" />
+  <aura:attribute name="profAnalysisId" type="String" />
+  <aura:attribute name="showWarning" type="Boolean" default="false"/>
+  <aura:attribute name="showNotChecked" type="Boolean" default="false"/>
+  <aura:attribute name="checkedInit" type="List" default="[]" />
+
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <aura:set attribute="title" value="{!v.viewMode == 'general' ? $Label.cuco.select_cond_title : $Label.cuco.select_flat_cond_title}" />
+
+  <div class="slds-modal__content slds-p-around_medium slds-is-relative" id="modal-content-id-1">
+
+    <aura:if isTrue="{!v.waiting}">
+      <lightning:spinner variant="brand" alternativeText="Loading..." />
+    </aura:if >
+
+    <aura:if isTrue="{!v.showWarning}">
+      <div class="slds-notify slds-notify_alert slds-alert_warning lds-m-top_small" style="padding-right:50px;" role="alert">
+        <h2><lightning:icon iconName="utility:warning" size="x-small" class="slds-m-right_x-small" />{!v.viewMode == 'general' ? $Label.cuco.select_cond_warning : $Label.cuco.select_flat_cond_warning }</h2>
+        <div class="slds-notify__close">
+          <lightning:buttonIcon iconName="utility:close" onclick="{!c.dismissWarning}" variant="bare" title="{!$Label.cuco.close}" alternativeText="{!$Label.cuco.close}"/>
+        </div>
+      </div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.showNotChecked}">
+      <div class="slds-notify slds-notify_alert slds-alert_error lds-m-top_small must_select_conditions" style="padding-right:50px;" role="alert">
+        <h2><lightning:icon iconName="utility:error" size="x-small" class="slds-m-right_x-small" variant="inverse" />{!$Label.cuco.mandatory_cond_selection}</h2>
+        <div class="slds-notify__close">
+          <lightning:buttonIcon iconName="utility:close" onclick="{!c.dismissNotChecked}" variant="bare-inverse" title="{!$Label.cuco.close}" alternativeText="{!$Label.cuco.close}"/>
+        </div>
+      </div>
+    </aura:if>
+
+    <div class="slds-m-top_small">
+      {!v.viewMode == 'general' ? $Label.cuco.select_cond_subtitle : $Label.cuco.select_flat_cond_subtitle}
+    </div>
+
+    <div class="slds-m-top_medium">
+      <!-- ACCORDION -->
+      <lightning:accordion
+        class="slds-m-top_x-small slds-text-body_regular conditions_select_accordion"
+        allowMultipleSectionsOpen="true"
+        activeSectionName="{!v.activeSections}"
+      >
+      <aura:iteration items="{!v.conditions}" var="product" indexVar="key">
+        <lightning:accordionSection class="slds-m-top_xx-small slds-m-bottom_xx-small slds-text-body_regular" name="{!product.section}" label="{!product.name}">
+          <lightning:accordion
+            class="{!'' + v.viewMode == 'flat' ? 'slds-m-top_xx-small slds-m-bottom_xx-smallm slds-text-body_regular conditions_select_accordion family-flat' : 'slds-m-top_xx-small slds-m-bottom_xx-smallm slds-text-body_regular conditions_select_accordion'}"
+            allowMultipleSectionsOpen="true"
+            activeSectionName="{!product.opensection}"
+          >
+          <aura:iteration items="{!product.value}" var="family" indexVar="key2">
+            <div class="slds-is-relative">
+              <aura:if isTrue="{!v.viewMode == 'flat'}">
+                <lightning:input type="checkbox" aura:id="group" checked="{!family.checked}" class="{!family.indeterminated ? 'checkbox-flat indeterminated' : 'checkbox-flat'}" name="{!'group' + family.id}" onchange="{!c.toggleGroup}" label="" value="{!family.id}" />
+              </aura:if>
+              <lightning:accordionSection class="slds-m-top_xx-small slds-m-bottom_xx-small" name="{!family.section}" label="{!family.name}">
+                <aura:iteration items="{!family.value}" var="condition" indexVar="key3">
+                  <aura:if isTrue="{!v.viewMode == 'flat'}">
+                      <p class="flatpad"><lightning:input type="checkbox" aura:id="checkbox"  disabled="{!condition.disabled}" checked="{!condition.checked}" label="{!condition.name}" name="{!family.id}" value="{!condition.id}" onchange="{!c.evaluateToggleGroup}" /></p>
+                    <aura:set attribute="else">
+                      <p class="flatpad"><lightning:input type="checkbox" aura:id="checkbox"  disabled="{!condition.disabled}" checked="{!condition.checked}" label="{!condition.name}" name="{!family.id}" value="{!condition.id}" /></p>
+                    </aura:set>
+                  </aura:if>
+                </aura:iteration>
+              </lightning:accordionSection>
+            </div>
+          </aura:iteration>
+          </lightning:accordion>
+        </lightning:accordionSection>
+      </aura:iteration>
+      </lightning:accordion>
+    </div>
+    <aura:if isTrue="{!v.viewMode == 'general'}">
+        <lightning:icon iconName="utility:info" size="xx-small" class="slds-m-horizontal_small"/>
+        <div class="slds-form-element__label fontSizeSmall slds-m-top_medium">{!$Label.cuco.informative_conditions_warning}</div>
+    </aura:if>
+  </div>
+  <footer class="slds-modal__footer">
+    <lightning:button label="{!$Label.cuco.cancel}" onclick="{!c.handleCancel}" class="slds-m-top_x-small" />
+    <lightning:button label="{!$Label.cuco.continue}" onclick="{!c.handleContinue}" variant="brand" class="slds-m-top_x-small" />
+  </footer>
+  {!v.body}
+</aura:component>

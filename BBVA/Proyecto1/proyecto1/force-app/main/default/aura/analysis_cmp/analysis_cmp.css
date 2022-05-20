@@ -1,0 +1,21 @@
+.THIS .tooltipStyle {
+  position: absolute;
+  top: -20px;
+  left: 20px;
+  min-width: 200px;
+}
+
+.THIS .noLabel > .slds-form-element__label {
+  display: none !important;
+}
+
+.THIS .maxWidth {
+  max-width: 900px !important;
+}
+
+.THIS .bigText {
+  white-space: pre-wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+}

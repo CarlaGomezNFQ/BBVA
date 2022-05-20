@@ -1,0 +1,101 @@
+<aura:component extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="cuco.Participants_Add_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:registerEvent name="refresh_participants_evt" type="cuco:refresh_participants_evt"/>
+    <aura:registerEvent name="refresh_comm_packages_evt" type="cuco:refresh_comm_packages_evt"/>
+    <aura:registerEvent name="refresh_forfait_packages_evt" type="cuco:refresh_forfait_packages_evt"/>
+    <aura:registerEvent name="refresh_gip_packages_evt" type="cuco:refresh_gip_packages_evt"/>
+
+    <!-- Modal attributes -->
+    <aura:attribute name="hide" type="Boolean"  default="false" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="closeButton" type="Boolean"  default="true" />
+    <aura:attribute name="hasHeader" type="Boolean"  default="true" />
+    <aura:attribute name="modalSizeSLDS" type="String" default="slds-modal_small" />
+
+    <!-- LC attributes -->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="profAccName" type="String" />
+    <aura:attribute name="lstAccsInTable" type="List" />
+    <aura:attribute name="isSuccess" type="Boolean" default="false" />
+
+    <!-- datatable attributes -->
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="data" type="List" />
+    <aura:attribute name="originalData" type="List" />
+    <aura:attribute name="selectedRows" type="List" />
+    <aura:attribute name="showCleanButton" type="Boolean" default="false" />
+    <aura:attribute name="numberSelectedRows" type="Integer" default="0" />
+    <aura:attribute name="hasActiveFilter" type="Boolean" default="false" />
+    <aura:attribute name="currentRowSelection" type="List" />
+    <aura:attribute name="globalRowSelection" type="List" />
+
+    <!-- Banners attributes -->
+    <aura:attribute name="errMessageBanner" type="String" />
+    <aura:attribute name="errMessageNoSelectedTable" type="String" />
+    <aura:attribute name="errNoSelectedTable" type="Boolean" default="false" />
+
+    <div aura:id="loadSpinner">
+      <lightning:spinner aura:id="simpleSpinner" alternativeText="loading..." class="backOff" variant="brand" size="large" />
+    </div>
+    <div class="slds-modal__content">
+        <div class="slds-grid slds-grid_vertical slds-p-horizontal_large slds-p-vertical_xx-large">
+            <aura:if isTrue="{!v.isSuccess}">
+                <div class="slds-col">
+                    <div class="slds-grid slds-wrap slds-p-bottom_medium">
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-grid slds-grid_vertical">
+                                <div class="slds-col">
+                                    <span class="slds-page-header__title slds-truncate">{!$Label.cuco.group_subsidiaries}&nbsp;{!v.profAccName}</span>
+                                </div>
+                                <div class="slds-col">
+                                    <div class="slds-truncate slds-text-color_weak">{!$Label.cuco.available_subsidiaries}:&nbsp;{!v.lstAccsInTable.length}.&nbsp;<b>{!$Label.cuco.selected_subsidiaries}:&nbsp;{!v.numberSelectedRows}</b></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element slds-float_right slds-p-top_x-small">
+                                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                    <lightning:buttonIcon iconName="utility:search" variant="bare" disabled="true" alternativeText="Settings" title="Settings" class="slds-input__icon slds-input__icon_left" />
+                                    <input type="text" id="searchInput" placeholder="{!$Label.cuco.search_list}" class="slds-input" onkeyup="{!c.handleSearchChange}"/>
+                                    <aura:if isTrue="{!v.showCleanButton}">
+                                        <lightning:buttonIcon iconName="utility:clear" variant="bare" onclick="{!c.handleInputCrossClick}" alternativeText="Settings" title="Settings" class="slds-input__icon slds-input__icon_right" />
+                                    </aura:if>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col">
+                  <aura:if isTrue="{!v.errNoSelectedTable}">
+                      <div class="slds-p-bottom_x-small">
+                          <mbr:messageBar bannerId="participantsAddErrTableBanner" recordId="{!v.recordId}" forceDisplay="true" message="{!v.errMessageNoSelectedTable}" iconName="utility:info"/>
+                      </div>
+                  </aura:if>
+                  <aura:if isTrue="{!v.lstAccsInTable.length &gt; 0}">
+                      <div class="slds-scrollable_y maxHeight">
+                          <lightning:datatable  aura:id="participantsAddTable"
+                                                columns="{!v.columns}"
+                                                data="{!v.data}"
+                                                keyField="participantId"
+                                                selectedRows="{!v.selectedRows}"
+                                                resizeColumnDisabled="true"
+                                                onrowselection="{!c.handleOnRowSelection}"
+                          />
+                      </div>
+                      <aura:set attribute="else">
+                          <div class="slds-m-around_xx-large slds-p-around_xx-large slds-align_absolute-center">
+                                <p>{!v.errMessageBanner}</p>
+                          </div>
+                      </aura:set>
+                  </aura:if>
+                </div>
+            </aura:if>
+        </div>
+    </div>
+    <footer class="slds-modal__footer">
+        <lightning:button class="slds-float_left" variant="neutral" label="{!$Label.cuco.cancel}" onclick="{!c.handleCancel}"  />
+        <lightning:button variant="brand" label="{!$Label.cuco.add}" onclick="{!c.handleAdd}" disabled="{!v.numberSelectedRows == 0 ? true : false}"  />
+    </footer>
+</aura:component>

@@ -1,0 +1,115 @@
+<aura:component controller="SER_CaseDetails_CONTROLLER" extends="c:SER_Connection" implements="flexipage:availableForAllPageTypes,force:hasRecordId">
+  <aura:attribute name="recordId" type="Id" access="public"/>
+  <aura:attribute name="case" type="Case"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+  <div class="slds-card">
+    <div class="slds-modal__header">
+        <h1 id="header99" class="slds-text-heading--medium">{!$Label.c.SER_EGS_CaseDetails_lbl}</h1>
+    </div>
+    <div class="slds-m-vertical_small">
+      <div class="slds-m-left_small">
+        <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+          <div class="slds-size_1-of-2">
+            <div class="slds-text-align_left slds-m-around_x-small slds-form-element slds-form-element_readonly">
+              <span class="slds-form-element__label">{!$Label.c.SER_EGS_CaseFieldClientName_lbl}</span>
+              <div class="slds-form-element__control">
+                <div class="slds-form-element__static">{!v.case.Account.Name}</div>
+              </div>
+            </div>
+          </div>
+          <div class="slds-size_1-of-2">
+            <div class="slds-text-align_left slds-m-around_x-small slds-form-element slds-form-element_readonly">
+              <span class="slds-form-element__label">{!$Label.c.SER_EGS_CaseFieldCaseNumber_lbl}</span>
+              <div class="slds-form-element__control">
+                <div class="slds-form-element__static">{!v.case.CaseNumber}</div>
+              </div>
+            </div>
+          </div>
+          <div class="slds-size_1-of-2">
+            <div class="slds-text-align_left slds-m-around_x-small slds-form-element slds-form-element_readonly">
+              <span class="slds-form-element__label">BEI</span>
+              <div class="slds-form-element__control">
+                <div class="slds-form-element__static">{!v.case.gf_bei_id__c}</div>
+              </div>
+            </div>
+          </div>
+          <div class="slds-size_1-of-2">
+            <div class="slds-text-align_left slds-m-around_x-small slds-form-element slds-form-element_readonly">
+              <span class="slds-form-element__label">{!$Label.c.SER_EGS_CaseFieldClientImpact_lbl}</span>
+              <div class="slds-form-element__control">
+                <div class="slds-form-element__static">{!v.case.gf_cust_impact_case_name__c}</div>
+              </div>
+            </div>
+          </div>
+          <div class="slds-size_1-of-2">
+            <div class="slds-text-align_left slds-m-around_x-small slds-form-element slds-form-element_readonly">
+              <span class="slds-form-element__label">{!$Label.c.SER_EGS_CaseFieldDetectedBy_lbl}</span>
+              <div class="slds-form-element__control">
+                <div class="slds-form-element__static">{!v.case.gf_case_creation_type__c}</div>
+              </div>
+            </div>
+          </div>
+          <div class="slds-size_1-of-2">
+            <div class="slds-text-align_left slds-m-around_x-small slds-form-element slds-form-element_readonly">
+              <span class="slds-form-element__label">Country Issue</span>
+              <div class="slds-form-element__control">
+                <div class="slds-form-element__static">{!v.case.gf_case_countries_desc__c}</div>
+              </div>
+            </div>
+          </div>
+          <div class="slds-size_1-of-2">
+            <div class="slds-text-align_left slds-m-around_x-small slds-form-element slds-form-element_readonly">
+              <span class="slds-form-element__label">{!$Label.c.SER_EGS_CaseFieldChannel_lbl}</span>
+              <div class="slds-form-element__control">
+                <div class="slds-form-element__static">{!v.case.case_channel_source_type__c}</div>
+              </div>
+            </div>
+          </div>
+          <div class="slds-size_1-of-2">
+            <div class="slds-text-align_left slds-m-around_x-small slds-form-element slds-form-element_readonly">
+              <span class="slds-form-element__label">{!$Label.c.SER_EGS_CaseFieldService_lbl}</span>
+              <div class="slds-form-element__control">
+                <div class="slds-form-element__static">{!v.case.gf_case_service_name__c}</div>
+              </div>
+            </div>
+          </div>
+          <div class="slds-size_1-of-2">
+            <div class="slds-text-align_left slds-m-around_x-small slds-form-element slds-form-element_readonly">
+              <span class="slds-form-element__label">{!$Label.c.SER_EGS_CaseFieldTypology_lbl}</span>
+              <div class="slds-form-element__control">
+                <div class="slds-form-element__static">{!v.case.gf_case_channel_source_name__c}</div>
+              </div>
+            </div>
+          </div>
+          <div class="slds-size_1-of-2">
+            <div class="slds-text-align_left slds-m-around_x-small slds-form-element slds-form-element_readonly">
+              <span class="slds-form-element__label">{!$Label.c.SER_EGS_CaseFieldEnviroment_lbl}</span>
+              <div class="slds-form-element__control">
+                <div class="slds-form-element__static">
+                  <aura:unescapedHtml value="{!v.case.gf_case_environment_name__c}"/>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slds-size_1-of-1">
+            <div class="slds-text-align_left slds-m-around_x-small slds-form-element slds-form-element_readonly">
+              <span class="slds-form-element__label">{!$Label.c.SER_EGS_CaseFieldDescription_lbl}</span>
+              <div class="slds-form-element__control">
+                <div class="slds-form-element__static">{!v.case.Description}</div>
+              </div>
+            </div>
+          </div>
+          <div class="slds-size_1-of-1">
+            <div class="slds-text-align_left slds-m-around_x-small slds-form-element slds-form-element_readonly">
+              <span class="slds-form-element__label">{!$Label.c.SER_EGS_CaseFieldDateTimeOpened_lbl}</span>
+              <div class="slds-form-element__control">
+                <div class="slds-form-element__static">{!v.case.CreatedDate}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</aura:component>

@@ -1,0 +1,81 @@
+<aura:component extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="cuco.GipPackageEdit_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:registerEvent name="refreshGipPackages" type="cuco:refresh_gip_packages_evt"/>
+
+    <!-- Modal attributes -->
+    <aura:attribute name="hide" type="Boolean" default="false" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="closeButton" type="Boolean" default="true" />
+    <aura:attribute name="hasHeader" type="Boolean" default="true" />
+    <aura:attribute name="modalSizeSLDS" type="String" default="slds-modal_small" />
+
+    <!-- Component attributes -->
+    <aura:attribute name="gipPkg" type="Object"/>
+    <aura:attribute name="profAnalysisId" type="String"/>
+    <aura:attribute name="lstParticipants" type="List"/>
+    <aura:attribute name="isSuccess" type="Boolean" default="true"/>
+    <aura:attribute name="showErrMessage" type="Boolean" default="false"/>
+
+    <div aura:id="loadSpinner">
+        <lightning:spinner alternativeText="loading..." variant="brand" size="large" />
+    </div>
+    <div class="slds-modal__content">
+        <div class="slds-grid slds-grid_vertical">
+            <!-- Package -->
+            <div class="slds-col slds-p-horizontal_large slds-p-vertical_large bgColorGrey">
+                <lightning:input aura:id="pkgDescription" label="{!$Label.cuco.gip_pkg_name}" maxlength="100" disabled="true"/>
+            </div>
+            <aura:if isTrue="{!v.showErrMessage}">
+                <div class="slds-p-top_large slds-p-left_large slds-p-right_large">
+                    <mbr:messageBar bannerId="gipEditErrBanner" recordId="{!v.profAnalysisId}" forceDisplay="true" message="{!$Label.cuco.gip_pkg_required_fields}" iconName="utility:warning" iconVariant="inverse" style="slds-theme_error"/>
+                </div>
+            </aura:if>
+            <!-- Participant -->
+            <div class="slds-col slds-p-around_large">
+                <legend class="slds-form-element__legend slds-form-element__label">{!$Label.cuco.gip_pkg_participant_section}</legend>
+                <div class="slds-form-element__control">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size_1-of-2 slds-p-right_x-small">
+                            <lightning:select aura:id="accSelection" label="{!$Label.cuco.gip_pkg_participant}" disabled="true">
+                                <aura:iteration items="{!v.lstParticipants}" var="participant">
+                                    <option text="{!participant.participantName}" value="{!participant.participantId}"></option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Representatives -->
+            <div class="slds-col slds-p-horizontal_large slds-p-bottom_large">
+                <legend class="slds-form-element__legend slds-form-element__label">{!$Label.cuco.forfait_pkg_representatives_section}</legend>
+                <div class="slds-form-element__control">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size_1-of-2 slds-p-right_x-small">
+                            <lightning:input aura:id="clientRepName" label="{!$Label.cuco.gip_pkg_clientRepName}" maxlength="100"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-p-left_x-small">
+                            <lightning:input aura:id="clientRepDoc" label="{!$Label.cuco.gip_pkg_clientRepDoc}" maxlength="25"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Comments -->
+            <div class="slds-col slds-p-horizontal_large slds-p-bottom_large">
+                <legend class="slds-form-element__legend slds-form-element__label">{!$Label.cuco.gip_pkg_comments}</legend>
+                <div class="slds-form-element__control">
+                    <div class="slds-grid slds-grid_vertical">
+                        <div class="slds-col">
+                            <lightning:textarea aura:id="comments" maxlength="1000"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="slds-modal__footer">
+        <lightning:button variant="neutral" label="{!$Label.cuco.cancel}" onclick="{!c.handleEditGipCancel}" class="slds-float_left" />
+        <lightning:button variant="brand" label="{!$Label.cuco.save}" onclick="{!c.handleEditGipSave}" />
+    </footer>
+</aura:component>

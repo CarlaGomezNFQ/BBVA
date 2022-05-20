@@ -1,0 +1,275 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" access="global" controller="cuco.Flat_Rates_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="conditionsSelectContinueEvt" event="cuco:conditions_select_continue_evt" action="{!c.handleConditionsSelectContinue}"  includeFacets="true" phase="bubble" />
+    <aura:handler name="flatRatesSetupContinueEvt" event="cuco:flat_rates_setup_continue_evt" action="{!c.handleFlatRatesSetup}"  includeFacets="true" phase="bubble" />
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    <aura:handler event="cuco:refresh_flat_rates_evt" action="{!c.handleFlatRatesEvt}"/>
+
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="sObjectName" type="String"/>
+    <aura:attribute name="showError" type="Boolean" default="true"/>
+    <aura:attribute name="errMessage" type="String"/>
+    <aura:attribute name="flatRates" type="Object" access="global" />
+    <aura:attribute name="showButtons" type="Boolean" default="false"/>
+    <aura:attribute name="canSetupFlatRates" type="Boolean" default="false"/>
+    <aura:attribute name="canRemoveFlatRates" type="Boolean" default="false"/>
+    <aura:attribute name="profAnalysisTypology" type="String" />
+    <aura:attribute name="showBannerError" type="Boolean" default="false"/>
+    <aura:attribute name="fieldLabelsMap" type="Map"/>
+    <aura:attribute name="picklistValuesMap" type="Map"/>
+    <aura:attribute name="flatRatesId" type="String"/>
+    <aura:attribute name="statusValue" type="String"/>
+    <aura:attribute name="pygData" type="List"/>
+    <aura:attribute name="condData" type="List"/>
+    <aura:attribute name="hasDynamicPricing" type="Boolean" default="false" />
+    <aura:attribute name="rawConditions" type="Object" />
+
+    <div aura:id="loadSpinner">
+        <lightning:spinner aura:id="simpleSpinner" alternativeText="loading..." class="backOff" variant="brand" size="large" />
+    </div>
+    <lightning:accordion class="flatRatesCss" aura:id="accordion" allowMultipleSectionsOpen="true" activeSectionName="flatRatesSection">
+        <lightning:accordionSection name="flatRatesSection" label="{!$Label.cuco.flat_rates_section_title}">
+            <aura:if isTrue="{!v.showError}">
+                <div class="slds-box slds-box_x-small slds-m-top_medium slds-align_absolute-center">
+                    {!v.errMessage}
+                </div>
+                <aura:set attribute="else">
+                    <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left">
+                        <div class="slds-grid slds-grid_vertical">
+                            <div class="slds-col">
+                                <aura:if isTrue="{!v.showBannerError}">
+                                    <div class="slds-p-top_large slds-p-left_large slds-p-right_large">
+                                        <mbr:messageBar bannerId="flatRatesError" recordId="{!v.recordId}" forceDisplay="true" message="{!$Label.cuco.flat_missing_variable_price_desc}" iconName="utility:warning" iconVariant="inverse" style="slds-theme_error"/>
+                                    </div>
+                                </aura:if>
+                            </div>
+                            <!-- Amount type area -->
+                            <div class="slds-col slds-border_bottom">
+                                <div class="slds-grid slds-wrap">
+                                    <!-- First field labels -->
+                                    <div class="slds-col slds-size_1-of-3 slds-p-left_x-large slds-p-top_x-large">
+                                        <div class="slds-form-element__label">
+                                            {!v.fieldLabelsMap.priceType}
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3 slds-p-top_x-large">
+                                        <aura:if isTrue="{!v.flatRates.priceType == 'IF'}">
+                                            <div class="slds-form-element__label">
+                                                {!v.fieldLabelsMap.fixedAmount}
+                                            </div>
+                                        </aura:if>
+                                        <aura:if isTrue="{!v.flatRates.priceType == 'EF'}">
+                                            <div class="slds-form-element__label">
+                                                {!v.fieldLabelsMap.variableAmountDesc}
+                                            </div>
+                                        </aura:if>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3 slds-p-top_x-large">
+                                        <div class="slds-form-element__label">
+                                            {!$Label.cuco.status}
+                                        </div>
+                                    </div>
+                                    <!-- First field values -->
+                                    <div class="slds-col slds-size_1-of-3 slds-p-left_x-large slds-p-bottom_x-large">
+                                        {!v.picklistValuesMap.priceType}
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3 slds-p-bottom_x-large">
+                                        <aura:if isTrue="{!v.flatRates.priceType == 'IF'}">
+                                            <lightning:formattedNumber value="{!v.flatRates.fixedAmount}" style="decimal" minimumFractionDigits="2"/>
+                                        </aura:if>
+                                        <aura:if isTrue="{!v.flatRates.priceType == 'EF'}">
+                                            {!v.flatRates.variableAmountDesc}
+                                        </aura:if>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3 slds-p-bottom_x-large">
+                                        <div class="{!v.statusValue == $Label.cuco.flat_cancellation_request ? 'red' : ''}">
+                                            {!v.statusValue}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Basic information section -->
+                            <div class="slds-col">
+                                <div class="slds-grid slds-wrap">
+                                    <!-- First field labels -->
+                                    <div class="slds-col slds-size_1-of-3 slds-p-left_x-large slds-p-top_x-large">
+                                        <div class="slds-form-element__label">
+                                            {!v.fieldLabelsMap.chargeType}
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3 slds-p-top_x-large">
+                                        <div class="slds-form-element__label">
+                                            {!v.fieldLabelsMap.periodicityChageType}
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3 slds-p-top_x-large">
+                                        <div class="slds-form-element__label">
+                                            {!v.fieldLabelsMap.currencyType}
+                                        </div>
+                                    </div>
+                                    <!-- First field values -->
+                                    <div class="slds-col slds-size_1-of-3 slds-p-left_x-large">
+                                        {!v.picklistValuesMap.chargeType}
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3">
+                                        {!v.picklistValuesMap.periodicityChageType}
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3">
+                                        {!v.flatRates.currencyType}
+                                    </div>
+                                    <!-- Second field labels -->
+                                    <div class="slds-col slds-size_1-of-3 slds-p-left_x-large slds-p-top_x-large">
+                                        <div class="slds-form-element__label">
+                                            {!v.fieldLabelsMap.chargeDay}
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3 slds-p-top_x-large">
+                                        <div class="slds-form-element__label">
+                                            {!v.fieldLabelsMap.nonWorkingDayChargeMethod}
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3 slds-p-top_x-large">
+                                        <div class="slds-form-element__label">
+                                            {!v.fieldLabelsMap.accWithoutBalanceMethod}
+                                        </div>
+                                    </div>
+                                    <!-- Second field values -->
+                                    <div class="slds-col slds-size_1-of-3 slds-p-left_x-large slds-p-bottom_x-large">
+                                        {!v.flatRates.chargeDay}
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3 slds-p-bottom_x-large">
+                                        {!v.picklistValuesMap.nonWorkingDayChargeMethod}
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3 slds-p-bottom_x-large">
+                                        {!v.picklistValuesMap.accWithoutBalanceMethod}
+                                    </div>
+                                    <aura:if isTrue="{!v.sObjectName == 'cuco__profitability_analysis__c'}">
+                                        <!-- Third field labels -->
+                                        <div class="slds-col slds-size_1-of-3 slds-p-left_x-large">
+                                            <div class="slds-form-element__label">
+                                                {!v.fieldLabelsMap.invoceComments}
+                                            </div>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-3"></div>
+                                        <div class="slds-col slds-size_1-of-3"></div>
+                                        <!-- Third field values -->
+                                        <div class="slds-col slds-size_1-of-3 slds-p-left_x-large slds-p-bottom_x-large">
+                                            {!v.flatRates.invoceComments}
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-3 slds-p-bottom_x-large"></div>
+                                        <div class="slds-col slds-size_1-of-3 slds-p-bottom_x-large"></div>
+                                    </aura:if>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tables section -->
+                    <div class="slds-grid slds-grid_vertical">
+                        <div class="slds-col">
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-3 slds-p-top_x-large slds-p-right_x-large slds-p-bottom_x-large">
+                                    <div class="slds-grid slds-grid_vertical">
+                                        <!-- PyG Table -->
+                                        <div class="slds-col">
+                                            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                                <thead>
+                                                    <tr class="slds-grid slds-wrap">
+                                                        <th class="slds-size_1-of-2 slds-border_left" scope="col">
+                                                            <div class="slds-truncate" title="{!$Label.cuco.flat_rates_account}">{!$Label.cuco.flat_rates_account}</div>
+                                                        </th>
+                                                        <th class="slds-size_1-of-2 slds-border_right textAlignRight" scope="col">
+                                                            <div class="slds-truncate" title="{!$Label.cuco.flat_rates_account_use}">{!$Label.cuco.flat_rates_account_use}</div>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <aura:iteration items="{!v.pygData}" var="pyg">
+                                                        <tr class="slds-grid slds-wrap">
+                                                            <td class="slds-size_1-of-2 slds-border_left">
+                                                                <div class="slds-truncate">{!pyg.name}</div>
+                                                            </td>
+                                                            <td class="slds-size_1-of-2 slds-border_right textAlignRight">
+                                                                <div class="slds-truncate"><lightning:formattedNumber value="{!pyg.usePercent}" style="decimal" minimumFractionDigits="2"/> %</div>
+                                                            </td>
+                                                        </tr>
+                                                    </aura:iteration>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <!-- Accounts comments -->
+                                        <aura:if isTrue="{!v.sObjectName == 'cuco__profitability_analysis__c'}">
+                                            <div class="slds-col slds-p-top_x-large">
+                                                <div class="slds-grid slds-wrap">
+                                                    <div class="slds-col slds-size_1-of-1">
+                                                        <div class="slds-form-element__label">
+                                                            {!v.fieldLabelsMap.accountComments}
+                                                        </div>
+                                                    </div>
+                                                    <div class="{!v.flatRates.accountComments != null ? 'slds-col slds-size_1-of-1 slds-border_bottom breakLine' : 'slds-col slds-size_1-of-1'}">
+                                                        {!v.flatRates.accountComments}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </aura:if>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_2-of-3 slds-p-top_x-large slds-p-bottom_x-large">
+                                    <!-- Conditions Table -->
+                                    <div class="slds-col">
+                                        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                            <thead>
+                                                <tr class="slds-grid slds-wrap">
+                                                    <th class="slds-size_1-of-2 slds-border_left" scope="col">
+                                                        <div class="slds-truncate" title="{!$Label.cuco.flat_rates_condition}">{!$Label.cuco.flat_rates_condition}</div>
+                                                    </th>
+                                                    <th class="slds-size_1-of-2 slds-border_right textAlignRight" scope="col">
+                                                        <div class="slds-truncate" title="{!$Label.cuco.flat_rates_condition_volume}">{!$Label.cuco.flat_rates_condition_volume}</div>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <aura:iteration items="{!v.condData}" var="cond">
+                                                    <tr class="slds-grid slds-wrap">
+                                                        <td class="slds-size_1-of-2 slds-border_left">
+                                                            <div class="slds-truncate">{!cond.name}</div>
+                                                        </td>
+                                                        <td class="slds-size_1-of-2 slds-border_right textAlignRight">
+                                                            <div class="slds-truncate"><lightning:formattedNumber value="{!cond.estimatedOpVolume}" style="decimal"/></div>
+                                                        </td>
+                                                    </tr>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Dynamic Pricing -->
+                        <div class="slds-col">
+                            <aura:if isTrue="{!v.hasDynamicPricing}">
+                                <cuco:dynamic_pricing_cmp wrapper="{!v.flatRates}" />
+                            </aura:if>
+                        </div>
+                    </div>
+                </aura:set>
+            </aura:if>
+            <aura:if isTrue="{!v.showButtons}">
+                <div class="slds-p-vertical_small">
+                    <aura:if isTrue="{!and(v.flatRates.requestType != 'Cancellation', v.canSetupFlatRates)}">
+                        <lightning:button label="{!$Label.cuco.setup_flat_rates}" onclick="{!c.handleSetupFlatClick}"/>
+                    </aura:if>
+                    <aura:if isTrue="{!v.flatRates != null}">
+                        <aura:if isTrue="{!and(v.flatRates.requestType != 'Cancellation', v.canRemoveFlatRates)}">
+                            <lightning:button label="{!$Label.cuco.remove_flat_rates}" onclick="{!c.handleRemoveFlatClick}" class="slds-p-left_small"/>
+                        </aura:if>
+                        <aura:if isTrue="{!and(v.flatRates.requestType == 'Cancellation', v.canRemoveFlatRates)}">
+                            <lightning:button label="{!$Label.cuco.undo_flat_cancellation_request}" onclick="{!c.handleRemoveFlatClick}" class="slds-p-left_small"/>
+                        </aura:if>
+                    </aura:if>
+                </div>
+            </aura:if>
+        </lightning:accordionSection>
+    </lightning:accordion>
+    {!v.body}
+</aura:component>

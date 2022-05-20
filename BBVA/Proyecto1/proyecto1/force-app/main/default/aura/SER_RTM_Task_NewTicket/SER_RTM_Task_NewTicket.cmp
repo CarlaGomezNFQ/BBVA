@@ -1,0 +1,24 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+access="global"  extends="c:SER_Connection" controller="SER_RTM_Task_CallWS">
+  <aura:attribute name="id_TaskID" type="Id" access="public"/>
+  <aura:attribute name="priorityOptions" type="List" access="PRIVATE"/>
+  <aura:attribute name="selectedPriority" type="String" access="PRIVATE"/>
+  <aura:attribute name="departamentOptions" type="List" access="PRIVATE"/>
+  <aura:attribute name="selecteddepartament" type="String" access="PRIVATE"/>
+  <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+
+  <div>
+    <lightning:messages/>
+    <lightning:select name="priorityId" label="Priority" aura:id="priorityId" value="{!v.selectedPriority}">
+        <aura:iteration items="{!v.priorityOptions}" var="optionP">
+            <option text="{!optionP.label}" value="{!optionP.id}" selected="{!optionP.selected}"/>
+        </aura:iteration>
+    </lightning:select>
+    <lightning:select name="departamentId" label="Remedy Department" aura:id="departamentId" value="{!v.selecteddepartament}">
+        <aura:iteration items="{!v.departamentOptions}" var="optionD">
+            <option text="{!optionD.label}" value="{!optionD.id}" selected="{!optionD.selected}"/>
+        </aura:iteration>
+    </lightning:select>
+    <c:SER_RTM_Task_TicketComment aura:id="New Remedy" id_TaskID='{!v.id_TaskID}'/>
+  </div>
+</aura:component>

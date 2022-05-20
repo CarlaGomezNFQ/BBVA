@@ -1,0 +1,6 @@
+<aura:component access="global" controller="cuco.Request_Ctrl">
+  <aura:attribute name="profitabilitySheetId" type="String" access="global"/>
+  <aura:attribute name="typology" type="String" access="global"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+  <aura:registerEvent name="request_creation_evt" type="cuco:request_creation_evt"/>
+</aura:component>

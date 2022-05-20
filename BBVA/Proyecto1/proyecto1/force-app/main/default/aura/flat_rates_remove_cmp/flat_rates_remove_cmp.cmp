@@ -1,0 +1,31 @@
+<aura:component access="global" extends="dwp_mdal:ModalTemplate_cmp" controller="cuco.Flat_Rates_Remove_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:registerEvent name="refresh_flat_rates_evt" type="cuco:refresh_flat_rates_evt" />
+    <aura:registerEvent name="refresh_conditions_evt" type="cuco:refresh_conditions_evt"/>
+
+    <aura:attribute name="profAnalysisFlatRatesId" type="String" />
+    <aura:attribute name="v.isSuccess" type="Boolean" default="false" />
+    <aura:attribute name="confirmationMessage" type="String" />
+    <aura:attribute name="buttonLabel" type="String" />
+    <aura:attribute name="profAnalysisFlatRate" type="cuco__profitability_analysis_flat_rates__c" />
+    <aura:attribute name="canRemove" type="Boolean" default="false" />
+    <aura:attribute name="requestType" type="String" />
+    <aura:attribute name="cmunDate" type="String" />
+    <aura:attribute name="title" type="String" default="" />
+
+    <div aura:id="loadSpinner">
+        <lightning:spinner style="background:none;" alternativeText="loading..." variant="brand" size="large" />
+    </div>
+
+    <aura:if isTrue="{!v.isSuccess}">
+        <div class="slds-modal__content slds-p-around_large slds-grid slds-grid_vertical-align-center slds-grid_align-center">
+            {!v.confirmationMessage}
+        </div>
+        <footer class="slds-modal__footer">
+            <lightning:button class="slds-float_left" variant="neutral" label="{!$Label.cuco.cancel}" onclick="{!c.handleCancel}" />
+            <lightning:button variant="brand" label="{!v.buttonLabel}" onclick="{!c.handleConfirm}" />
+        </footer>
+    </aura:if>
+
+</aura:component>

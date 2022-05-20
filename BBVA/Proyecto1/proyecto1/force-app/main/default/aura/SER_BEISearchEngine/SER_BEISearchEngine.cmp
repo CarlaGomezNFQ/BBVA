@@ -1,0 +1,52 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+access="global"  extends="c:SER_Connection" controller="SER_BEISearchEngine_CONTROLLER">
+  <aura:attribute name="recordId" type="Id"/>
+  <aura:attribute name="bl_DisplayGroup" type="Boolean" default="false"/>
+  <aura:attribute name="bl_DisplayClient" type="Boolean" default="false"/>
+  <aura:attribute name="bl_DisplayLocalClient" type="Boolean" default="false"/>
+  <aura:attribute name="bl_DisplayLocalReference" type="Boolean" default="false"/>
+  <aura:attribute name="selectedObject" type="String" access="private" default="" />
+  <aura:attribute name="selectedRecord" type="String" default="" />
+  <aura:attribute name="error" type="boolean" default="false" />
+  <aura:attribute name="errormessage" type="String" access="private" default="" />
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+  <article class="slds-card"> 
+    <div class="slds-page-header slds-grid forceActionsContainer slds-box_x-small slds-align_absolute-center slds-box slds-theme_default ">
+      <div class="slds-size_1-of-1">
+        <lightning:messages/>
+        <aura:if isTrue="{!v.error}">
+          <h1 id="header98" class="slds-text-heading--medium" style="color: red; font-weight: 400;">{!v.errormessage}</h1>
+        </aura:if>
+        <lightning:spinner class="slds-hide" aura:id="Spinner" alternativeText="Loading" size="medium" variant="brand"/>
+        <div class="slds-section slds-is-open">
+          <div aria-hidden="false" class="slds-section__content">
+              <div class="slds-size_1-of-1">
+                <lightning:select name="BEI" label="Select Object" aura:id="BEIId" value="{!v.selectedObject}" onchange="{!c.fn_onChange}">
+                  <option text="Group" value="Group"/>
+                  <option text="Client" value="Client"/>
+                  <option text="Local Client" value="LocalClient"/>
+                  <option text="Local Reference" value="LocalReference"/>
+                </lightning:select>
+                <aura:if isTrue="{!v.bl_DisplayGroup}">
+                  <c:SER_Lookup aura:id="Group" objectName="Group" fieldName="gf_bei_Id__c" label="Group" iconName="standard:account" placeholder="BEI" required="false" selectedRecord="{!v.selectedRecord}" queryFields="DES_Main_Parent__c"/>
+                </aura:if>
+                <aura:if isTrue="{!v.bl_DisplayClient}">
+                  <c:SER_Lookup aura:id="Client" objectName="Account" fieldName="gf_bei_Id__c" label="Clients" iconName="standard:account" placeholder="BEI" required="false" selectedRecord="{!v.selectedRecord}" queryFields="SER_CClient__c"/>
+                </aura:if>
+                <aura:if isTrue="{!v.bl_DisplayLocalClient}">
+                  <c:SER_Lookup aura:id="LocalClient" objectName="Local_Client_EGS__c" fieldName="gf_bei_id__c" label="Local Clients" iconName="custom:custom64" placeholder="BEI" required="false" selectedRecord="{!v.selectedRecord}" queryFields="customer_system_id__c,country_id__c"/>
+                </aura:if>
+                <aura:if isTrue="{!v.bl_DisplayLocalReference}">
+                  <c:SER_Lookup aura:id="LocalReference" objectName="Local_Reference__c" fieldName="gf_bei_id__c" label="Local Reference" iconName="custom:custom37" placeholder="BEI" required="false" selectedRecord="{!v.selectedRecord}" queryFields="gf_reference_id__c,gf_local_reference_country_id__c,SER_Company_ID__c,SER_Bank_ID__c"/>
+                </aura:if>
+                <div class="slds-align_absolute-center slds-m-top_large">
+                  <button aura:id="send-button" class="slds-button slds-button--brand" onclick="{!c.fn_creteLookup}" id="saveButton">Save</button>
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+</aura:component>

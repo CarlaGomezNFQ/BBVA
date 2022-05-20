@@ -1,0 +1,114 @@
+<aura:component extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="cuco.ForfaitPackageAdd_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:registerEvent name="refreshForfaitPackages" type="cuco:refresh_forfait_packages_evt"/>
+
+    <!-- Modal attributes -->
+    <aura:attribute name="hide" type="Boolean" default="false" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="closeButton" type="Boolean" default="true" />
+    <aura:attribute name="hasHeader" type="Boolean" default="true" />
+    <aura:attribute name="modalSizeSLDS" type="String" default="slds-modal_small" />
+
+    <!-- Component attributes -->
+    <aura:attribute name="forfaitPkg" type="Object"/>
+    <aura:attribute name="profAnalysisId" type="String"/>
+    <aura:attribute name="isSuccess" type="Boolean" default="false"/>
+    <aura:attribute name="lstPkg" type="List"/>
+    <aura:attribute name="lstParticipants" type="List"/>
+    <aura:attribute name="lstChargePeriodicity" type="List"/>
+    <aura:attribute name="showErrMessage" type="Boolean" default="false"/>
+    <aura:attribute name="mode" type="String"/>
+
+    <div aura:id="loadSpinner">
+        <lightning:spinner alternativeText="loading..." variant="brand" size="large" />
+    </div>
+    <aura:if isTrue="{!v.isSuccess}">
+        <div class="slds-modal__content">
+            <div class="slds-grid slds-grid_vertical">
+                <!-- Package -->
+                <div class="slds-col slds-p-horizontal_large slds-p-vertical_large bgColorGrey">
+                    <lightning:select aura:id="pkgSelection" label="{!$Label.cuco.forfait_pkg_name}" disabled="{!v.mode == 'edit' ? true : false}">
+                        <aura:iteration items="{!v.lstPkg}" var="forfaitPkg">
+                            <option text="{!forfaitPkg.label}" value="{!forfaitPkg.Id}"></option>
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+                <aura:if isTrue="{!v.showErrMessage}">
+                    <div class="slds-p-top_large slds-p-left_large slds-p-right_large">
+                        <mbr:messageBar bannerId="forfaitAddErrBanner" recordId="{!v.profAnalysisId}" forceDisplay="true" message="{!$Label.cuco.forfait_pkg_required_fields}" iconName="utility:warning" iconVariant="inverse" style="slds-theme_error"/>
+                    </div>
+                </aura:if>
+                <!-- Participant -->
+                <div class="slds-col slds-p-around_large">
+                    <legend class="slds-form-element__legend slds-form-element__label">{!$Label.cuco.forfait_pkg_participant_section}</legend>
+                    <div class="slds-form-element__control">
+                        <div class="slds-grid slds-wrap">
+                            <div class="slds-col slds-size_1-of-2 slds-p-right_x-small">
+                                <lightning:select aura:id="accSelection" label="{!$Label.cuco.forfait_pkg_participant}" disabled="{!v.mode == 'edit' ? true : false}">
+                                    <aura:iteration items="{!v.lstParticipants}" var="participant">
+                                        <option text="{!participant.participantName}" value="{!participant.participantId}"></option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-p-left_x-small">
+                            </div>
+                            <div class="slds-col slds-size_1-of-3 slds-p-right_x-small">
+                                <lightning:input aura:id="chargeAccount" label="{!$Label.cuco.forfait_pkg_chargeAccount}" maxlength="50"/>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3 slds-p-right_xx-small slds-p-left_xx-small">
+                                <lightning:input type="number" aura:id="chargeAmount" label="{!$Label.cuco.forfait_pkg_chargeAmount}" formatter="currency" step="0.01"/>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3 slds-p-left_x-small">
+                                <lightning:select aura:id="chargePeriodicity" label="{!$Label.cuco.forfait_pkg_periodicity}">
+                                    <aura:iteration items="{!v.lstChargePeriodicity}" var="periodicity">
+                                        <option text="{!periodicity.value}" value="{!periodicity.apiName}"></option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Representatives -->
+                <div class="slds-col slds-p-horizontal_large slds-p-bottom_large">
+                    <legend class="slds-form-element__legend slds-form-element__label">{!$Label.cuco.forfait_pkg_representatives_section}</legend>
+                    <div class="slds-form-element__control">
+                        <div class="slds-grid slds-wrap">
+                            <div class="slds-col slds-size_1-of-2 slds-p-right_x-small">
+                                <lightning:input aura:id="clientRepName" label="{!$Label.cuco.forfait_pkg_clientRepName}" maxlength="100"/>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-p-left_x-small">
+                                <lightning:input aura:id="clientRepDoc" label="{!$Label.cuco.forfait_pkg_clientRepDoc}" maxlength="25"/>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-p-right_x-small">
+                                <lightning:input aura:id="bankRepName" label="{!$Label.cuco.forfait_pkg_bankRepName}" maxlength="100"/>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-p-left_x-small">
+                                <lightning:input aura:id="bankRepDoc" label="{!$Label.cuco.forfait_pkg_bankRepDoc}" maxlength="25"/>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-p-right_x-small">
+                                <lightning:input aura:id="signingLocation" label="{!$Label.cuco.forfait_pkg_signingLocation}" maxlength="100"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Comments -->
+                <div class="slds-col slds-p-horizontal_large slds-p-bottom_large">
+                    <legend class="slds-form-element__legend slds-form-element__label">{!$Label.cuco.forfait_pkg_comments_section}</legend>
+                    <div class="slds-form-element__control">
+                        <div class="slds-grid slds-grid_vertical">
+                            <div class="slds-col">
+                                <lightning:textarea aura:id="comments" maxlength="1000"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="{!$Label.cuco.cancel}" onclick="{!c.handleAddForfaitCancel}" class="slds-float_left" />
+            <lightning:button variant="brand" label="{!$Label.cuco.save}" onclick="{!c.handleAddForfaitSave}" />
+        </footer>
+    </aura:if>
+</aura:component>

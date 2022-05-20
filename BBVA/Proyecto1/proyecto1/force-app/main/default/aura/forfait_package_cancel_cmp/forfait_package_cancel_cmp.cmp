@@ -1,0 +1,32 @@
+<aura:component extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="cuco.ForfaitPackageCancel_Ctrl">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:registerEvent name="refreshForfaitPackages" type="cuco:refresh_forfait_packages_evt"/>
+
+    <!-- Modal attributes -->
+    <aura:attribute name="hide" type="Boolean" default="false" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="closeButton" type="Boolean" default="true" />
+    <aura:attribute name="hasHeader" type="Boolean" default="true" />
+    <aura:attribute name="modalSizeSLDS" type="String" default="slds-modal_small" />
+
+    <!-- Component attributes -->
+    <aura:attribute name="forfaitPkg" type="Object"/>
+    <aura:attribute name="profAnalysisId" type="String"/>
+    <aura:attribute name="isSuccess" type="Boolean" default="false"/>
+    <aura:attribute name="confirmationMessage" type="String"/>
+
+    <div aura:id="loadSpinner">
+        <lightning:spinner alternativeText="loading..." variant="brand" size="large" />
+    </div>
+    <aura:if isTrue="{!v.isSuccess}">
+        <div class="slds-modal__content slds-p-around_large slds-grid slds-grid_vertical-align-center slds-grid_align-center">
+            {!v.confirmationMessage}
+        </div>
+        <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="{!$Label.cuco.cancel}" onclick="{!c.handleCancelForfaitCancel}" class="slds-float_left" />
+            <lightning:button variant="brand" label="{!$Label.cuco.confirm}" onclick="{!c.handleCancelForfaitConfirm}" />
+        </footer>
+    </aura:if>
+</aura:component>
